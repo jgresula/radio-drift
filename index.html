@@ -328,6 +328,50 @@
         const speakerOnSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
         const speakerOffSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
 
+        // Station blacklist with exponential backoff
+        const BLACKLIST_KEY = 'ambientRadioBlacklist';
+        const BASE_TTL = 6 * 60 * 60 * 1000; // 6 hours in ms
+        const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // Cap at 7 days
+
+        function getBlacklist() {
+            try {
+                return JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '{}');
+            } catch { return {}; }
+        }
+
+        function saveBlacklist(blacklist) {
+            localStorage.setItem(BLACKLIST_KEY, JSON.stringify(blacklist));
+        }
+
+        function isStationBlacklisted(stationId) {
+            const blacklist = getBlacklist();
+            const entry = blacklist[stationId];
+            if (!entry) return false;
+            if (Date.now() >= entry.until) {
+                // TTL expired, remove from blacklist
+                delete blacklist[stationId];
+                saveBlacklist(blacklist);
+                return false;
+            }
+            return true;
+        }
+
+        function blacklistStation(stationId) {
+            const blacklist = getBlacklist();
+            const entry = blacklist[stationId] || { fails: 0 };
+            entry.fails++;
+            // Exponential backoff: 6h, 12h, 24h, 48h... capped at 7 days
+            const ttl = Math.min(BASE_TTL * Math.pow(2, entry.fails - 1), MAX_TTL);
+            entry.until = Date.now() + ttl;
+            blacklist[stationId] = entry;
+            saveBlacklist(blacklist);
+            console.log(`Station ${stationId} blacklisted for ${Math.round(ttl / 3600000)}h (fail #${entry.fails})`);
+        }
+
+        function getAvailableStations() {
+            return stations.filter(s => !isStationBlacklisted(s.stationuuid));
+        }
+
         // Update actual audio volumes based on master and channel settings
         function updateVolumes() {
             const effectiveMaster = masterMuted ? 0 : masterVolume;
@@ -385,8 +429,9 @@
 
         // Play random radio station
         function playRandomStation() {
-            if (stations.length === 0) {
-                radioNowPlaying.textContent = 'No stations available';
+            const available = getAvailableStations();
+            if (available.length === 0) {
+                radioNowPlaying.textContent = stations.length ? 'All stations temporarily unavailable' : 'No stations available';
                 return;
             }
 
@@ -397,9 +442,9 @@
                 radioAudio.src = '';
             }
 
-            // Pick random station
-            const randomIndex = Math.floor(Math.random() * stations.length);
-            currentStation = stations[randomIndex];
+            // Pick random station from available (non-blacklisted)
+            const randomIndex = Math.floor(Math.random() * available.length);
+            currentStation = available[randomIndex];
 
             radioNowPlaying.textContent = currentStation.name || 'Unknown Station';
             radioStatus.textContent = 'Connecting...';
@@ -420,6 +465,7 @@
             radioAudio.addEventListener('error', (e) => {
                 if (radioStopping) return; // Ignore errors during intentional stop
                 console.error('Radio playback error:', e);
+                blacklistStation(currentStation.stationuuid);
                 radioStatus.textContent = 'Error - Try another';
                 radioStatus.className = 'channel-status error';
             });
@@ -432,6 +478,7 @@
             radioAudio.src = currentStation.url_resolved;
             radioAudio.play().catch(err => {
                 console.error('Play failed:', err);
+                blacklistStation(currentStation.stationuuid);
                 radioStatus.textContent = 'Error - Try another';
                 radioStatus.className = 'channel-status error';
             });
