@@ -234,8 +234,8 @@
             <div class="now-playing" id="radio-now-playing">Click play to start</div>
             <div class="controls">
 <button id="radio-toggle" title="Play/Pause">&#9654;</button>
+<button id="radio-mute" title="Mute"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
-                    <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
                     <span class="volume-value" id="radio-volume-value">70%</span>
                 </div>
@@ -252,8 +252,8 @@
             <div class="now-playing" id="space-now-playing">Apollo 11 Mission Audio</div>
             <div class="controls">
 <button id="space-toggle" title="Play/Pause">&#9654;</button>
+<button id="space-mute" title="Mute"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
-                    <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="40">
                     <span class="volume-value" id="space-volume-value">40%</span>
                 </div>
@@ -264,7 +264,7 @@
         <!-- Master Volume -->
         <div class="master-volume">
             <span class="master-label">Master</span>
-<button id="mute-btn" title="Mute">&#9835;</button>
+<button id="master-mute" title="Mute"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
             <div class="volume-container" style="flex: 1;">
                 <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
                 <span class="volume-value" id="master-volume-value">100%</span>
@@ -310,22 +310,34 @@
 
         const masterVolumeSlider = document.getElementById('master-volume');
         const masterVolumeValue = document.getElementById('master-volume-value');
-        const muteBtn = document.getElementById('mute-btn');
+        const masterMuteBtn = document.getElementById('master-mute');
+        const radioMuteBtn = document.getElementById('radio-mute');
+        const spaceMuteBtn = document.getElementById('space-mute');
 
         // Flags to track intentional stops (to avoid error display)
         let radioStopping = false;
         let spaceStopping = false;
-        let isMuted = false;
+
+        // Mute states
+        let masterMuted = false;
+        let radioMuted = false;
+        let spaceMuted = false;
         let masterVolume = 1;
+
+        // SVG icons for mute buttons
+        const speakerOnSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
+        const speakerOffSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
 
         // Update actual audio volumes based on master and channel settings
         function updateVolumes() {
-            const effectiveMaster = isMuted ? 0 : masterVolume;
+            const effectiveMaster = masterMuted ? 0 : masterVolume;
             if (radioAudio) {
-                radioAudio.volume = (radioVolumeSlider.value / 100) * effectiveMaster;
+                const radioVol = radioMuted ? 0 : (radioVolumeSlider.value / 100);
+                radioAudio.volume = radioVol * effectiveMaster;
             }
             if (spaceAudio) {
-                spaceAudio.volume = (spaceVolumeSlider.value / 100) * effectiveMaster;
+                const spaceVol = spaceMuted ? 0 : (spaceVolumeSlider.value / 100);
+                spaceAudio.volume = spaceVol * effectiveMaster;
             }
         }
 
@@ -542,10 +554,24 @@
             updateVolumes();
         });
 
-        muteBtn.addEventListener('click', () => {
-            isMuted = !isMuted;
-            muteBtn.innerHTML = isMuted ? '&#10005;' : '&#9835;';
-            muteBtn.title = isMuted ? 'Unmute' : 'Mute';
+        masterMuteBtn.addEventListener('click', () => {
+            masterMuted = !masterMuted;
+            masterMuteBtn.innerHTML = masterMuted ? speakerOffSvg : speakerOnSvg;
+            masterMuteBtn.title = masterMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
+        radioMuteBtn.addEventListener('click', () => {
+            radioMuted = !radioMuted;
+            radioMuteBtn.innerHTML = radioMuted ? speakerOffSvg : speakerOnSvg;
+            radioMuteBtn.title = radioMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
+        spaceMuteBtn.addEventListener('click', () => {
+            spaceMuted = !spaceMuted;
+            spaceMuteBtn.innerHTML = spaceMuted ? speakerOffSvg : speakerOnSvg;
+            spaceMuteBtn.title = spaceMuted ? 'Unmute' : 'Mute';
             updateVolumes();
         });
 
