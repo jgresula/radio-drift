@@ -204,6 +204,11 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 2px;
             overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-bar:hover {
+            height: 6px;
         }
 
         .progress-fill {
@@ -369,6 +374,7 @@
         const spaceStatus = document.getElementById('space-status');
         const spaceNowPlaying = document.getElementById('space-now-playing');
         const spaceProgress = document.getElementById('space-progress');
+        const spaceProgressBar = document.querySelector('#space-progress .progress-bar');
         const spaceProgressFill = document.getElementById('space-progress-fill');
         const spaceCurrent = document.getElementById('space-current');
         const spaceDuration = document.getElementById('space-duration');
@@ -691,6 +697,15 @@
         spaceVolumeSlider.addEventListener('input', (e) => {
             spaceVolumeValue.textContent = `${e.target.value}%`;
             updateVolumes();
+        });
+
+        // Seek on progress bar click
+        spaceProgressBar.addEventListener('click', (e) => {
+            if (spaceAudio && spaceAudio.duration) {
+                const rect = spaceProgressBar.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                spaceAudio.currentTime = percent * spaceAudio.duration;
+            }
         });
 
         masterVolumeSlider.addEventListener('input', (e) => {
