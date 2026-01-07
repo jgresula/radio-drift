@@ -189,6 +189,50 @@
             50% { opacity: 0.5; }
         }
 
+        .master-volume {
+            background: rgba(123, 140, 222, 0.1);
+            border: 1px solid rgba(123, 140, 222, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .master-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #7b8cde;
+        }
+
+        .mute-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mute-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .mute-btn.muted {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.4);
+            color: #f44336;
+        }
+
         .footer {
             text-align: center;
             margin-top: 2rem;
@@ -242,6 +286,16 @@
             <button class="shuffle-btn" id="space-shuffle">&#128256; Random Clip</button>
         </div>
 
+        <!-- Master Volume -->
+        <div class="master-volume">
+            <span class="master-label">Master</span>
+            <button class="mute-btn" id="mute-btn" title="Mute">&#128264;</button>
+            <div class="volume-container" style="flex: 1;">
+                <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
+                <span class="volume-value" id="master-volume-value">100%</span>
+            </div>
+        </div>
+
         <div class="footer">
             Radio stations via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
             Space audio: NASA (Public Domain)
@@ -279,9 +333,26 @@
         const spaceStatus = document.getElementById('space-status');
         const spaceNowPlaying = document.getElementById('space-now-playing');
 
+        const masterVolumeSlider = document.getElementById('master-volume');
+        const masterVolumeValue = document.getElementById('master-volume-value');
+        const muteBtn = document.getElementById('mute-btn');
+
         // Flags to track intentional stops (to avoid error display)
         let radioStopping = false;
         let spaceStopping = false;
+        let isMuted = false;
+        let masterVolume = 1;
+
+        // Update actual audio volumes based on master and channel settings
+        function updateVolumes() {
+            const effectiveMaster = isMuted ? 0 : masterVolume;
+            if (radioAudio) {
+                radioAudio.volume = (radioVolumeSlider.value / 100) * effectiveMaster;
+            }
+            if (spaceAudio) {
+                spaceAudio.volume = (spaceVolumeSlider.value / 100) * effectiveMaster;
+            }
+        }
 
         // Radio Browser API - fetch available servers first, then stations
         async function getRadioBrowserServer() {
@@ -351,7 +422,7 @@
             radioAudio = new Audio();
             radioStopping = false; // Reset flag for new audio
             radioAudio.crossOrigin = 'anonymous';
-            radioAudio.volume = radioVolumeSlider.value / 100;
+            updateVolumes();
 
             radioAudio.addEventListener('playing', () => {
                 radioStatus.textContent = 'Playing';
@@ -415,8 +486,8 @@
 
             spaceAudio = new Audio();
             spaceAudio.crossOrigin = 'anonymous';
-            spaceAudio.volume = spaceVolumeSlider.value / 100;
             spaceAudio.loop = true;
+            updateVolumes();
 
             spaceAudio.addEventListener('playing', () => {
                 spaceStatus.textContent = 'Playing';
@@ -479,21 +550,29 @@
         radioToggleBtn.addEventListener('click', toggleRadio);
         radioShuffleBtn.addEventListener('click', playRandomStation);
         radioVolumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            radioVolumeValue.textContent = `${value}%`;
-            if (radioAudio) {
-                radioAudio.volume = value / 100;
-            }
+            radioVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
         });
 
         spaceToggleBtn.addEventListener('click', toggleSpace);
         spaceShuffleBtn.addEventListener('click', shuffleSpaceClip);
         spaceVolumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            spaceVolumeValue.textContent = `${value}%`;
-            if (spaceAudio) {
-                spaceAudio.volume = value / 100;
-            }
+            spaceVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+        });
+
+        masterVolumeSlider.addEventListener('input', (e) => {
+            masterVolume = e.target.value / 100;
+            masterVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+        });
+
+        muteBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            muteBtn.classList.toggle('muted', isMuted);
+            muteBtn.innerHTML = isMuted ? '&#128263;' : '&#128264;';
+            muteBtn.title = isMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
         });
 
         // Initialize
