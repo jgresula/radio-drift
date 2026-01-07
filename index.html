@@ -437,7 +437,6 @@
 
             // Stop current playback
             if (radioAudio) {
-                radioStopping = true; // Prevent error display when clearing src
                 radioAudio.pause();
                 radioAudio.src = '';
             }
@@ -451,32 +450,36 @@
             radioStatus.className = 'channel-status loading';
 
             // Create new audio element
-            radioAudio = new Audio();
-            radioStopping = false; // Reset flag for new audio
-            radioAudio.crossOrigin = 'anonymous';
+            const newAudio = new Audio();
+            radioAudio = newAudio;
+            radioStopping = false;
+            newAudio.crossOrigin = 'anonymous';
             updateVolumes();
 
-            radioAudio.addEventListener('playing', () => {
+            newAudio.addEventListener('playing', () => {
+                if (radioAudio !== newAudio) return; // Ignore if replaced
                 radioStatus.textContent = 'Playing';
                 radioStatus.className = 'channel-status playing';
                 radioToggleBtn.innerHTML = '&#10074;&#10074;'; // Pause icon
             });
 
-            radioAudio.addEventListener('error', (e) => {
-                if (radioStopping) return; // Ignore errors during intentional stop
+            newAudio.addEventListener('error', (e) => {
+                if (radioAudio !== newAudio || radioStopping) return; // Ignore if replaced or stopping
                 console.error('Radio playback error:', e);
                 blacklistStation(currentStation.stationuuid);
                 radioStatus.textContent = 'Error - Try another';
                 radioStatus.className = 'channel-status error';
             });
 
-            radioAudio.addEventListener('waiting', () => {
+            newAudio.addEventListener('waiting', () => {
+                if (radioAudio !== newAudio) return; // Ignore if replaced
                 radioStatus.textContent = 'Buffering...';
                 radioStatus.className = 'channel-status loading';
             });
 
-            radioAudio.src = currentStation.url_resolved;
-            radioAudio.play().catch(err => {
+            newAudio.src = currentStation.url_resolved;
+            newAudio.play().catch(err => {
+                if (radioAudio !== newAudio) return; // Ignore if replaced
                 console.error('Play failed:', err);
                 blacklistStation(currentStation.stationuuid);
                 radioStatus.textContent = 'Error - Try another';
