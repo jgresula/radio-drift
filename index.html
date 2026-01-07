@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambient Radio Mixer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            color: #7b8cde;
+        }
+
+        .channel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .channel-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .channel-status {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(123, 140, 222, 0.2);
+            color: #7b8cde;
+        }
+
+        .channel-status.playing {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .channel-status.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .now-playing {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            min-height: 1.4em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .volume-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7b8cde;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #7b8cde;
+            cursor: pointer;
+            border: none;
+        }
+
+        .volume-value {
+            font-size: 0.75rem;
+            color: #888;
+            width: 35px;
+            text-align: right;
+        }
+
+        .shuffle-btn {
+            width: 100%;
+            height: 36px;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .footer a {
+            color: #7b8cde;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ambient Mixer</h1>
+
+        <!-- Ambient Radio Channel -->
+        <div class="channel">
+            <div class="channel-header">
+                <span class="channel-title">Ambient Radio</span>
+                <span class="channel-status" id="radio-status">Stopped</span>
+            </div>
+            <div class="now-playing" id="radio-now-playing">Click play to start</div>
+            <div class="controls">
+                <button id="radio-play" title="Play">&#9654;</button>
+                <button id="radio-stop" title="Stop">&#9632;</button>
+                <div class="volume-container">
+                    <span style="font-size: 0.8rem;">&#128264;</span>
+                    <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
+                    <span class="volume-value" id="radio-volume-value">70%</span>
+                </div>
+            </div>
+            <button class="shuffle-btn" id="radio-shuffle">&#128256; Random Station</button>
+        </div>
+
+        <!-- Space Comms Channel -->
+        <div class="channel">
+            <div class="channel-header">
+                <span class="channel-title">Space Comms</span>
+                <span class="channel-status" id="space-status">Stopped</span>
+            </div>
+            <div class="now-playing" id="space-now-playing">Apollo 11 Mission Audio</div>
+            <div class="controls">
+                <button id="space-play" title="Play">&#9654;</button>
+                <button id="space-stop" title="Stop">&#9632;</button>
+                <div class="volume-container">
+                    <span style="font-size: 0.8rem;">&#128264;</span>
+                    <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="40">
+                    <span class="volume-value" id="space-volume-value">40%</span>
+                </div>
+            </div>
+            <button class="shuffle-btn" id="space-shuffle">&#128256; Random Clip</button>
+        </div>
+
+        <div class="footer">
+            Radio stations via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
+            Space audio: NASA (Public Domain)
+        </div>
+    </div>
+
+    <script>
+        // NASA/Space audio clips from archive.org (public domain)
+        const spaceAudioClips = [
+            {
+                name: 'Apollo 11 - "The Eagle has landed"',
+                url: 'https://archive.org/download/Apollo11Audio/clipped/09_the_eagle_has_landed.mp3'
+            },
+            {
+                name: 'Apollo 11 - "One small step"',
+                url: 'https://archive.org/download/Apollo11Audio/clipped/11_one_small_step.mp3'
+            },
+            {
+                name: 'Apollo 11 - Lunar Module Separation',
+                url: 'https://archive.org/download/Apollo11Audio/clipped/05_eagle_separation.mp3'
+            },
+            {
+                name: 'Apollo 13 - "Houston, we\'ve had a problem"',
+                url: 'https://archive.org/download/Apollo13Audio/clipped/houston_problem.mp3'
+            },
+            {
+                name: 'Apollo 8 - Earthrise Description',
+                url: 'https://archive.org/download/Apollo8Audio/clipped/earthrise.mp3'
+            }
+        ];
+
+        // Alternative longer ambient space audio if short clips don't work
+        const fallbackSpaceAudio = [
+            {
+                name: 'NASA Mission Audio',
+                url: 'https://www.nasa.gov/wp-content/uploads/2015/01/590325main_ringtone_702702_702-702-Shuttle-702-702.mp3'
+            }
+        ];
+
+        // State
+        let radioAudio = null;
+        let spaceAudio = null;
+        let currentStation = null;
+        let currentSpaceClip = 0;
+        let stations = [];
+
+        // DOM Elements
+        const radioPlayBtn = document.getElementById('radio-play');
+        const radioStopBtn = document.getElementById('radio-stop');
+        const radioShuffleBtn = document.getElementById('radio-shuffle');
+        const radioVolumeSlider = document.getElementById('radio-volume');
+        const radioVolumeValue = document.getElementById('radio-volume-value');
+        const radioStatus = document.getElementById('radio-status');
+        const radioNowPlaying = document.getElementById('radio-now-playing');
+
+        const spacePlayBtn = document.getElementById('space-play');
+        const spaceStopBtn = document.getElementById('space-stop');
+        const spaceShuffleBtn = document.getElementById('space-shuffle');
+        const spaceVolumeSlider = document.getElementById('space-volume');
+        const spaceVolumeValue = document.getElementById('space-volume-value');
+        const spaceStatus = document.getElementById('space-status');
+        const spaceNowPlaying = document.getElementById('space-now-playing');
+
+        // Radio Browser API - fetch ambient stations
+        async function fetchAmbientStations() {
+            radioStatus.textContent = 'Loading...';
+            radioStatus.className = 'channel-status loading';
+
+            try {
+                // Use multiple server options for reliability
+                const servers = [
+                    'https://de1.api.radio-browser.info',
+                    'https://nl1.api.radio-browser.info',
+                    'https://at1.api.radio-browser.info'
+                ];
+
+                const server = servers[Math.floor(Math.random() * servers.length)];
+                const response = await fetch(`${server}/json/stations/bytagexact/ambient?limit=100&hidebroken=true`);
+
+                if (!response.ok) throw new Error('Failed to fetch stations');
+
+                stations = await response.json();
+                stations = stations.filter(s => s.url_resolved && s.url_resolved.length > 0);
+
+                if (stations.length === 0) {
+                    throw new Error('No stations found');
+                }
+
+                radioStatus.textContent = `${stations.length} stations`;
+                radioStatus.className = 'channel-status';
+                radioNowPlaying.textContent = 'Click play to start';
+
+            } catch (error) {
+                console.error('Error fetching stations:', error);
+                radioStatus.textContent = 'Error';
+                radioStatus.className = 'channel-status error';
+                radioNowPlaying.textContent = 'Failed to load stations';
+            }
+        }
+
+        // Play random radio station
+        function playRandomStation() {
+            if (stations.length === 0) {
+                radioNowPlaying.textContent = 'No stations available';
+                return;
+            }
+
+            // Stop current playback
+            if (radioAudio) {
+                radioAudio.pause();
+                radioAudio.src = '';
+            }
+
+            // Pick random station
+            const randomIndex = Math.floor(Math.random() * stations.length);
+            currentStation = stations[randomIndex];
+
+            radioNowPlaying.textContent = currentStation.name || 'Unknown Station';
+            radioStatus.textContent = 'Connecting...';
+            radioStatus.className = 'channel-status loading';
+
+            // Create new audio element
+            radioAudio = new Audio();
+            radioAudio.crossOrigin = 'anonymous';
+            radioAudio.volume = radioVolumeSlider.value / 100;
+
+            radioAudio.addEventListener('playing', () => {
+                radioStatus.textContent = 'Playing';
+                radioStatus.className = 'channel-status playing';
+            });
+
+            radioAudio.addEventListener('error', (e) => {
+                console.error('Radio playback error:', e);
+                radioStatus.textContent = 'Error - Try another';
+                radioStatus.className = 'channel-status error';
+            });
+
+            radioAudio.addEventListener('waiting', () => {
+                radioStatus.textContent = 'Buffering...';
+                radioStatus.className = 'channel-status loading';
+            });
+
+            radioAudio.src = currentStation.url_resolved;
+            radioAudio.play().catch(err => {
+                console.error('Play failed:', err);
+                radioStatus.textContent = 'Error - Try another';
+                radioStatus.className = 'channel-status error';
+            });
+        }
+
+        // Stop radio
+        function stopRadio() {
+            if (radioAudio) {
+                radioAudio.pause();
+                radioAudio.src = '';
+            }
+            radioStatus.textContent = 'Stopped';
+            radioStatus.className = 'channel-status';
+        }
+
+        // Play space audio
+        function playSpaceAudio() {
+            if (spaceAudio) {
+                spaceAudio.pause();
+            }
+
+            const clip = spaceAudioClips[currentSpaceClip];
+            spaceNowPlaying.textContent = clip.name;
+            spaceStatus.textContent = 'Loading...';
+            spaceStatus.className = 'channel-status loading';
+
+            spaceAudio = new Audio();
+            spaceAudio.crossOrigin = 'anonymous';
+            spaceAudio.volume = spaceVolumeSlider.value / 100;
+            spaceAudio.loop = true;
+
+            spaceAudio.addEventListener('playing', () => {
+                spaceStatus.textContent = 'Playing';
+                spaceStatus.className = 'channel-status playing';
+            });
+
+            spaceAudio.addEventListener('error', (e) => {
+                console.error('Space audio error:', e);
+                // Try fallback
+                if (fallbackSpaceAudio.length > 0) {
+                    const fallback = fallbackSpaceAudio[0];
+                    spaceNowPlaying.textContent = fallback.name;
+                    spaceAudio.src = fallback.url;
+                    spaceAudio.play().catch(() => {
+                        spaceStatus.textContent = 'Error';
+                        spaceStatus.className = 'channel-status error';
+                    });
+                } else {
+                    spaceStatus.textContent = 'Error';
+                    spaceStatus.className = 'channel-status error';
+                }
+            });
+
+            spaceAudio.src = clip.url;
+            spaceAudio.play().catch(err => {
+                console.error('Space play failed:', err);
+                spaceStatus.textContent = 'Error';
+                spaceStatus.className = 'channel-status error';
+            });
+        }
+
+        // Stop space audio
+        function stopSpaceAudio() {
+            if (spaceAudio) {
+                spaceAudio.pause();
+                spaceAudio.currentTime = 0;
+            }
+            spaceStatus.textContent = 'Stopped';
+            spaceStatus.className = 'channel-status';
+        }
+
+        // Shuffle space clip
+        function shuffleSpaceClip() {
+            currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
+            const wasPlaying = spaceAudio && !spaceAudio.paused;
+            if (wasPlaying) {
+                playSpaceAudio();
+            } else {
+                spaceNowPlaying.textContent = spaceAudioClips[currentSpaceClip].name;
+            }
+        }
+
+        // Event Listeners
+        radioPlayBtn.addEventListener('click', playRandomStation);
+        radioStopBtn.addEventListener('click', stopRadio);
+        radioShuffleBtn.addEventListener('click', playRandomStation);
+        radioVolumeSlider.addEventListener('input', (e) => {
+            const value = e.target.value;
+            radioVolumeValue.textContent = `${value}%`;
+            if (radioAudio) {
+                radioAudio.volume = value / 100;
+            }
+        });
+
+        spacePlayBtn.addEventListener('click', playSpaceAudio);
+        spaceStopBtn.addEventListener('click', stopSpaceAudio);
+        spaceShuffleBtn.addEventListener('click', shuffleSpaceClip);
+        spaceVolumeSlider.addEventListener('input', (e) => {
+            const value = e.target.value;
+            spaceVolumeValue.textContent = `${value}%`;
+            if (spaceAudio) {
+                spaceAudio.volume = value / 100;
+            }
+        });
+
+        // Initialize
+        fetchAmbientStations();
+    </script>
+</body>
+</html>
