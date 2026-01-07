@@ -275,14 +275,6 @@
             }
         ];
 
-        // Alternative longer ambient space audio if short clips don't work
-        const fallbackSpaceAudio = [
-            {
-                name: 'NASA Mission Audio',
-                url: 'https://www.nasa.gov/wp-content/uploads/2015/01/590325main_ringtone_702702_702-702-Shuttle-702-702.mp3'
-            }
-        ];
-
         // State
         let radioAudio = null;
         let spaceAudio = null;
@@ -427,19 +419,8 @@
 
             spaceAudio.addEventListener('error', (e) => {
                 console.error('Space audio error:', e);
-                // Try fallback
-                if (fallbackSpaceAudio.length > 0) {
-                    const fallback = fallbackSpaceAudio[0];
-                    spaceNowPlaying.textContent = fallback.name;
-                    spaceAudio.src = fallback.url;
-                    spaceAudio.play().catch(() => {
-                        spaceStatus.textContent = 'Error';
-                        spaceStatus.className = 'channel-status error';
-                    });
-                } else {
-                    spaceStatus.textContent = 'Error';
-                    spaceStatus.className = 'channel-status error';
-                }
+                spaceStatus.textContent = 'Error';
+                spaceStatus.className = 'channel-status error';
             });
 
             spaceAudio.src = clip.url;
