@@ -332,10 +332,9 @@
                 return;
             }
 
-            radioStopping = false; // Reset flag
-
             // Stop current playback
             if (radioAudio) {
+                radioStopping = true; // Prevent error display when clearing src
                 radioAudio.pause();
                 radioAudio.src = '';
             }
@@ -350,6 +349,7 @@
 
             // Create new audio element
             radioAudio = new Audio();
+            radioStopping = false; // Reset flag for new audio
             radioAudio.crossOrigin = 'anonymous';
             radioAudio.volume = radioVolumeSlider.value / 100;
 
@@ -381,12 +381,10 @@
 
         // Stop radio
         function stopRadio() {
-            radioStopping = true; // Set flag before stopping
             if (radioAudio) {
                 radioAudio.pause();
-                radioAudio.src = '';
             }
-            radioStatus.textContent = 'Stopped';
+            radioStatus.textContent = 'Paused';
             radioStatus.className = 'channel-status';
             radioToggleBtn.innerHTML = '&#9654;'; // Play icon
         }
@@ -395,9 +393,8 @@
         function toggleRadio() {
             if (radioAudio && !radioAudio.paused) {
                 stopRadio();
-            } else if (currentStation && radioAudio) {
+            } else if (radioAudio && radioAudio.src) {
                 // Resume current station
-                radioStopping = false;
                 radioAudio.play().catch(() => playRandomStation());
             } else {
                 playRandomStation();
