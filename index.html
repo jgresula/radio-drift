@@ -214,8 +214,7 @@
             </div>
             <div class="now-playing" id="radio-now-playing">Click play to start</div>
             <div class="controls">
-                <button id="radio-play" title="Play">&#9654;</button>
-                <button id="radio-stop" title="Stop">&#9632;</button>
+<button id="radio-toggle" title="Play/Pause">&#9654;</button>
                 <div class="volume-container">
                     <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
@@ -233,8 +232,7 @@
             </div>
             <div class="now-playing" id="space-now-playing">Apollo 11 Mission Audio</div>
             <div class="controls">
-                <button id="space-play" title="Play">&#9654;</button>
-                <button id="space-stop" title="Stop">&#9632;</button>
+<button id="space-toggle" title="Play/Pause">&#9654;</button>
                 <div class="volume-container">
                     <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="40">
@@ -267,21 +265,23 @@
         let stations = [];
 
         // DOM Elements
-        const radioPlayBtn = document.getElementById('radio-play');
-        const radioStopBtn = document.getElementById('radio-stop');
+        const radioToggleBtn = document.getElementById('radio-toggle');
         const radioShuffleBtn = document.getElementById('radio-shuffle');
         const radioVolumeSlider = document.getElementById('radio-volume');
         const radioVolumeValue = document.getElementById('radio-volume-value');
         const radioStatus = document.getElementById('radio-status');
         const radioNowPlaying = document.getElementById('radio-now-playing');
 
-        const spacePlayBtn = document.getElementById('space-play');
-        const spaceStopBtn = document.getElementById('space-stop');
+        const spaceToggleBtn = document.getElementById('space-toggle');
         const spaceShuffleBtn = document.getElementById('space-shuffle');
         const spaceVolumeSlider = document.getElementById('space-volume');
         const spaceVolumeValue = document.getElementById('space-volume-value');
         const spaceStatus = document.getElementById('space-status');
         const spaceNowPlaying = document.getElementById('space-now-playing');
+
+        // Flags to track intentional stops (to avoid error display)
+        let radioStopping = false;
+        let spaceStopping = false;
 
         // Radio Browser API - fetch available servers first, then stations
         async function getRadioBrowserServer() {
@@ -332,6 +332,8 @@
                 return;
             }
 
+            radioStopping = false; // Reset flag
+
             // Stop current playback
             if (radioAudio) {
                 radioAudio.pause();
@@ -354,9 +356,11 @@
             radioAudio.addEventListener('playing', () => {
                 radioStatus.textContent = 'Playing';
                 radioStatus.className = 'channel-status playing';
+                radioToggleBtn.innerHTML = '&#10074;&#10074;'; // Pause icon
             });
 
             radioAudio.addEventListener('error', (e) => {
+                if (radioStopping) return; // Ignore errors during intentional stop
                 console.error('Radio playback error:', e);
                 radioStatus.textContent = 'Error - Try another';
                 radioStatus.className = 'channel-status error';
@@ -377,16 +381,32 @@
 
         // Stop radio
         function stopRadio() {
+            radioStopping = true; // Set flag before stopping
             if (radioAudio) {
                 radioAudio.pause();
                 radioAudio.src = '';
             }
             radioStatus.textContent = 'Stopped';
             radioStatus.className = 'channel-status';
+            radioToggleBtn.innerHTML = '&#9654;'; // Play icon
+        }
+
+        // Toggle radio play/pause
+        function toggleRadio() {
+            if (radioAudio && !radioAudio.paused) {
+                stopRadio();
+            } else if (currentStation && radioAudio) {
+                // Resume current station
+                radioStopping = false;
+                radioAudio.play().catch(() => playRandomStation());
+            } else {
+                playRandomStation();
+            }
         }
 
         // Play space audio
         function playSpaceAudio() {
+            spaceStopping = false; // Reset flag
             if (spaceAudio) {
                 spaceAudio.pause();
             }
@@ -404,9 +424,11 @@
             spaceAudio.addEventListener('playing', () => {
                 spaceStatus.textContent = 'Playing';
                 spaceStatus.className = 'channel-status playing';
+                spaceToggleBtn.innerHTML = '&#10074;&#10074;'; // Pause icon
             });
 
             spaceAudio.addEventListener('error', (e) => {
+                if (spaceStopping) return; // Ignore errors during intentional stop
                 console.error('Space audio error:', e);
                 spaceStatus.textContent = 'Error';
                 spaceStatus.className = 'channel-status error';
@@ -422,12 +444,27 @@
 
         // Stop space audio
         function stopSpaceAudio() {
+            spaceStopping = true; // Set flag before stopping
             if (spaceAudio) {
                 spaceAudio.pause();
                 spaceAudio.currentTime = 0;
             }
             spaceStatus.textContent = 'Stopped';
             spaceStatus.className = 'channel-status';
+            spaceToggleBtn.innerHTML = '&#9654;'; // Play icon
+        }
+
+        // Toggle space play/pause
+        function toggleSpace() {
+            if (spaceAudio && !spaceAudio.paused) {
+                stopSpaceAudio();
+            } else if (spaceAudio && spaceAudio.src) {
+                // Resume
+                spaceStopping = false;
+                spaceAudio.play().catch(() => playSpaceAudio());
+            } else {
+                playSpaceAudio();
+            }
         }
 
         // Shuffle space clip
@@ -442,8 +479,7 @@
         }
 
         // Event Listeners
-        radioPlayBtn.addEventListener('click', playRandomStation);
-        radioStopBtn.addEventListener('click', stopRadio);
+        radioToggleBtn.addEventListener('click', toggleRadio);
         radioShuffleBtn.addEventListener('click', playRandomStation);
         radioVolumeSlider.addEventListener('input', (e) => {
             const value = e.target.value;
@@ -453,8 +489,7 @@
             }
         });
 
-        spacePlayBtn.addEventListener('click', playSpaceAudio);
-        spaceStopBtn.addEventListener('click', stopSpaceAudio);
+        spaceToggleBtn.addEventListener('click', toggleSpace);
         spaceShuffleBtn.addEventListener('click', shuffleSpaceClip);
         spaceVolumeSlider.addEventListener('input', (e) => {
             const value = e.target.value;
