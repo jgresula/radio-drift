@@ -249,7 +249,7 @@
                 <span class="channel-title">Space Comms</span>
                 <span class="channel-status" id="space-status">Stopped</span>
             </div>
-            <div class="now-playing" id="space-now-playing">Apollo 11 Mission Audio</div>
+            <div class="now-playing" id="space-now-playing">Loading clips...</div>
             <div class="controls">
 <button id="space-toggle" title="Play/Pause">&#9654;</button>
 <button id="space-mute" title="Mute"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
@@ -272,19 +272,44 @@
         </div>
 
         <div class="footer">
-            Radio stations via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
-            Space audio: NASA (Public Domain)
+            Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
+            Space audio: <a href="https://archive.org/details/Apollo11Audio" target="_blank">Apollo 11</a> (NASA/Public Domain)
         </div>
     </div>
 
     <script>
-        // NASA/Space audio (public domain)
-        const spaceAudioClips = [
-            {
-                name: 'STS-135 Landing Commander Comments',
-                url: 'https://www.nasa.gov/wp-content/uploads/2015/01/590196main_ringtone_135_landingCommanderComments.mp3'
+        // Apollo 11 audio base URL (public domain via Internet Archive)
+        const APOLLO11_BASE_URL = 'https://archive.org/download/Apollo11Audio/';
+        let spaceAudioClips = [];
+
+        // Format seconds to HH:MM:SS
+        function formatDuration(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // Load Apollo 11 clips from JSON
+        async function loadSpaceClips() {
+            try {
+                const response = await fetch('apollo11.json');
+                if (!response.ok) throw new Error('Failed to load clips');
+                const clips = await response.json();
+                spaceAudioClips = clips.map(c => ({
+                    name: c.name.replace('.mp3', ''),
+                    url: APOLLO11_BASE_URL + c.name,
+                    length: c.length
+                }));
+                spaceStatus.textContent = `${spaceAudioClips.length} clips`;
+                spaceNowPlaying.textContent = 'Click play to start';
+            } catch (error) {
+                console.error('Error loading space clips:', error);
+                spaceStatus.textContent = 'Error';
+                spaceStatus.className = 'channel-status error';
+                spaceNowPlaying.textContent = 'Failed to load clips';
             }
-        ];
+        }
 
         // State
         let radioAudio = null;
@@ -511,25 +536,36 @@
 
         // Play space audio
         function playSpaceAudio() {
+            if (spaceAudioClips.length === 0) {
+                spaceNowPlaying.textContent = 'No clips available';
+                return;
+            }
+
             spaceStopping = false; // Reset flag
             if (spaceAudio) {
                 spaceAudio.pause();
             }
 
             const clip = spaceAudioClips[currentSpaceClip];
-            spaceNowPlaying.textContent = clip.name;
+            const duration = clip.length ? ` (${formatDuration(clip.length)})` : '';
+            spaceNowPlaying.textContent = clip.name + duration;
             spaceStatus.textContent = 'Loading...';
             spaceStatus.className = 'channel-status loading';
 
             spaceAudio = new Audio();
             spaceAudio.crossOrigin = 'anonymous';
-            spaceAudio.loop = true;
             updateVolumes();
 
             spaceAudio.addEventListener('playing', () => {
                 spaceStatus.textContent = 'Playing';
                 spaceStatus.className = 'channel-status playing';
                 spaceToggleBtn.innerHTML = '&#10074;&#10074;'; // Pause icon
+            });
+
+            spaceAudio.addEventListener('ended', () => {
+                // Auto-play next random clip
+                currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
+                playSpaceAudio();
             });
 
             spaceAudio.addEventListener('error', (e) => {
@@ -574,12 +610,15 @@
 
         // Shuffle space clip
         function shuffleSpaceClip() {
+            if (spaceAudioClips.length === 0) return;
             currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
             const wasPlaying = spaceAudio && !spaceAudio.paused;
             if (wasPlaying) {
                 playSpaceAudio();
             } else {
-                spaceNowPlaying.textContent = spaceAudioClips[currentSpaceClip].name;
+                const clip = spaceAudioClips[currentSpaceClip];
+                const duration = clip.length ? ` (${formatDuration(clip.length)})` : '';
+                spaceNowPlaying.textContent = clip.name + duration;
             }
         }
 
@@ -627,6 +666,7 @@
 
         // Initialize
         fetchAmbientStations();
+        loadSpaceClips();
     </script>
 </body>
 </html>
