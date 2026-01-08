@@ -546,7 +546,7 @@
             </div>
             <div class="button-row">
                 <button class="shuffle-btn" id="radio-shuffle">&#128256; Random Station</button>
-                <button class="favorites-btn" id="open-favorites" title="Manage favorites">&#9776;</button>
+                <button class="favorites-btn" id="open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             </div>
         </div>
 
@@ -892,7 +892,7 @@
             }
             try {
                 const server = await getRadioBrowserServer();
-                const response = await fetch(`${server}/json/tags?limit=500&order=stationcount&reverse=true`);
+                const response = await fetch(`${server}/json/tags?limit=2000&order=stationcount&reverse=true`);
                 if (!response.ok) throw new Error('Failed to fetch tags');
                 allTags = await response.json();
                 allTags = allTags.filter(t => t.stationcount > 5);
@@ -946,9 +946,15 @@
         }
 
         async function fetchStationsByTag(tag) {
-            radioStatus.textContent = 'Loading...';
-            radioStatus.className = 'channel-status loading';
-            radioNowPlaying.textContent = 'Fetching stations...';
+            const wasPlaying = radioAudio && !radioAudio.paused;
+            const previousStatus = radioStatus.textContent;
+            const previousNowPlaying = radioNowPlaying.textContent;
+
+            if (!wasPlaying) {
+                radioStatus.textContent = 'Loading...';
+                radioStatus.className = 'channel-status loading';
+                radioNowPlaying.textContent = 'Fetching stations...';
+            }
 
             try {
                 const server = await getRadioBrowserServer();
@@ -962,14 +968,21 @@
                     throw new Error('No stations found');
                 }
 
-                radioStatus.textContent = `${stations.length} stations`;
-                radioStatus.className = 'channel-status';
-                radioNowPlaying.textContent = 'Click play to start';
+                if (wasPlaying) {
+                    // Keep current status and now-playing if still playing
+                    radioStatus.textContent = previousStatus;
+                } else {
+                    radioStatus.textContent = `${stations.length} stations`;
+                    radioStatus.className = 'channel-status';
+                    radioNowPlaying.textContent = 'Click play to start';
+                }
             } catch (error) {
                 console.error('Error fetching stations:', error);
-                radioStatus.textContent = 'Error';
-                radioStatus.className = 'channel-status error';
-                radioNowPlaying.textContent = 'Failed to load stations';
+                if (!wasPlaying) {
+                    radioStatus.textContent = 'Error';
+                    radioStatus.className = 'channel-status error';
+                    radioNowPlaying.textContent = 'Failed to load stations';
+                }
             }
         }
 
