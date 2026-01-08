@@ -556,6 +556,12 @@
                 <span class="channel-title">Space Comms</span>
                 <span class="channel-status" id="space-status">Stopped</span>
             </div>
+            <div class="tag-row">
+                <button class="tag-btn" id="source-btn" title="Change source">
+                    <span id="current-source">Apollo 11</span>
+                    <span>&#9662;</span>
+                </button>
+            </div>
             <div class="now-playing" id="space-now-playing">Loading clips...</div>
             <div class="progress-container" id="space-progress" style="display: none;">
                 <span class="progress-time" id="space-current">0:00:00</span>
@@ -572,7 +578,9 @@
                     <span class="volume-value" id="space-volume-value">40%</span>
                 </div>
             </div>
-            <button class="shuffle-btn" id="space-shuffle">&#128256; Random Clip</button>
+            <div class="button-row">
+                <button class="shuffle-btn" id="space-shuffle">&#128256; Random Clip</button>
+            </div>
         </div>
 
         <!-- Master Volume -->
@@ -587,7 +595,7 @@
 
         <div class="footer">
             Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
-            Space audio: <a href="https://archive.org/details/Apollo11Audio" target="_blank">Apollo 11</a> (NASA/Public Domain)
+            Space audio: <a href="https://archive.org/" target="_blank">Archive.org</a> (NASA/Public Domain)
         </div>
     </div>
 
@@ -622,13 +630,26 @@
         </div>
     </div>
 
+    <!-- Source Selection Modal -->
+    <div class="modal-overlay" id="source-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Select Audio Source</span>
+                <button class="modal-close" id="source-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tag-list" id="source-list"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============== Constants ==============
-        const APOLLO11_BASE_URL = 'https://archive.org/download/Apollo11Audio/';
         const BLACKLIST_KEY = 'ambientRadioBlacklist';
         const FAVORITES_KEY = 'ambientRadioFavorites';
         const TAGS_CACHE_KEY = 'ambientRadioTags';
         const SELECTED_TAG_KEY = 'ambientRadioSelectedTag';
+        const SELECTED_SOURCE_KEY = 'ambientSpaceSource';
         const BASE_TTL = 6 * 60 * 60 * 1000; // 6 hours
         const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
         const TAGS_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 day
@@ -642,7 +663,9 @@
         let currentSpaceClip = 0;
         let stations = [];
         let allTags = [];
+        let allSources = [];
         let currentTag = localStorage.getItem(SELECTED_TAG_KEY) || 'ambient';
+        let currentSource = localStorage.getItem(SELECTED_SOURCE_KEY) || 'apollo11.json';
         let radioStopping = false;
         let spaceStopping = false;
         let masterMuted = false;
@@ -692,6 +715,12 @@
         const openFavoritesBtn = document.getElementById('open-favorites');
         const importFavoritesBtn = document.getElementById('import-favorites');
         const exportFavoritesBtn = document.getElementById('export-favorites');
+
+        const sourceBtn = document.getElementById('source-btn');
+        const currentSourceSpan = document.getElementById('current-source');
+        const sourceModal = document.getElementById('source-modal');
+        const sourceModalClose = document.getElementById('source-modal-close');
+        const sourceList = document.getElementById('source-list');
 
         // ============== SVG Icons ==============
         const speakerOnSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
@@ -1120,18 +1149,39 @@
         }
 
         // ============== Space Audio Functions ==============
+        async function loadSources() {
+            try {
+                const response = await fetch('sources.json');
+                if (!response.ok) throw new Error('Failed to load sources');
+                allSources = await response.json();
+
+                // Find and display current source name
+                const source = allSources.find(s => s.json === currentSource) || allSources[0];
+                if (source) {
+                    currentSource = source.json;
+                    currentSourceSpan.textContent = source.name;
+                }
+
+                await loadSpaceClips();
+            } catch (error) {
+                console.error('Error loading sources:', error);
+                // Fallback to loading default apollo11.json
+                await loadSpaceClips();
+            }
+        }
+
         async function loadSpaceClips() {
             try {
-                const response = await fetch('apollo11.json');
+                const response = await fetch(currentSource);
                 if (!response.ok) throw new Error('Failed to load clips');
                 const clips = await response.json();
                 spaceAudioClips = clips.map(c => ({
-                    name: c.name.replace('.mp3', ''),
-                    url: APOLLO11_BASE_URL + c.name,
-                    length: c.length
+                    name: c.name,
+                    url: c.url
                 }));
                 spaceStatus.textContent = `${spaceAudioClips.length} clips`;
                 spaceNowPlaying.textContent = 'Click play to start';
+                currentSpaceClip = 0;
             } catch (error) {
                 console.error('Error loading space clips:', error);
                 spaceStatus.textContent = 'Error';
@@ -1159,7 +1209,7 @@
             spaceProgress.style.display = 'flex';
             spaceProgressFill.style.width = '0%';
             spaceCurrent.textContent = '0:00:00';
-            spaceDuration.textContent = clip.length ? formatDuration(clip.length) : '0:00:00';
+            spaceDuration.textContent = '0:00:00';
 
             spaceAudio = new Audio();
             spaceAudio.crossOrigin = 'anonymous';
@@ -1258,6 +1308,40 @@
             favoritesModal.classList.remove('active');
         }
 
+        // Source modal functions
+        function openSourceModal() {
+            sourceModal.classList.add('active');
+            renderSources();
+        }
+
+        function closeSourceModal() {
+            sourceModal.classList.remove('active');
+        }
+
+        function renderSources() {
+            sourceList.innerHTML = allSources.map(source => `
+                <div class="tag-item ${source.json === currentSource ? 'selected' : ''}" data-source="${source.json}">
+                    <span class="tag-name">${source.name}</span>
+                </div>
+            `).join('');
+        }
+
+        async function selectSource(sourceJson) {
+            const source = allSources.find(s => s.json === sourceJson);
+            if (!source) return;
+
+            currentSource = sourceJson;
+            localStorage.setItem(SELECTED_SOURCE_KEY, sourceJson);
+            currentSourceSpan.textContent = source.name;
+            closeSourceModal();
+
+            // Stop current playback and load new clips
+            if (spaceAudio && !spaceAudio.paused) {
+                stopSpaceAudio();
+            }
+            await loadSpaceClips();
+        }
+
         // ============== Event Listeners ==============
         radioToggleBtn.addEventListener('click', toggleRadio);
         radioShuffleBtn.addEventListener('click', playRandomStation);
@@ -1334,11 +1418,25 @@
         exportFavoritesBtn.addEventListener('click', exportFavorites);
         importFavoritesBtn.addEventListener('click', importFavorites);
 
+        // Source modal
+        sourceBtn.addEventListener('click', openSourceModal);
+        sourceModalClose.addEventListener('click', closeSourceModal);
+        sourceModal.addEventListener('click', (e) => {
+            if (e.target === sourceModal) closeSourceModal();
+        });
+        sourceList.addEventListener('click', (e) => {
+            const item = e.target.closest('.tag-item');
+            if (item) {
+                selectSource(item.dataset.source);
+            }
+        });
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeTagModal();
                 closeFavoritesModal();
+                closeSourceModal();
             }
         });
 
@@ -1346,7 +1444,7 @@
         currentTagSpan.textContent = currentTag;
         fetchTags();
         fetchStationsByTag(currentTag);
-        loadSpaceClips();
+        loadSources();
     </script>
 </body>
 </html>
