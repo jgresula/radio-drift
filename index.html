@@ -943,12 +943,19 @@
             `).join('');
         }
 
-        function selectTag(tagName) {
+        async function selectTag(tagName) {
+            const wasPlaying = radioAudio && !radioAudio.paused;
+
             currentTag = tagName;
             localStorage.setItem(SELECTED_TAG_KEY, tagName);
             currentTagSpan.textContent = tagName;
             closeTagModal();
-            fetchStationsByTag(tagName);
+            await fetchStationsByTag(tagName);
+
+            // Auto-play if was playing before
+            if (wasPlaying) {
+                playRandomStation();
+            }
         }
 
         // ============== Volume Functions ==============
@@ -1278,13 +1285,7 @@
         function shuffleSpaceClip() {
             if (spaceAudioClips.length === 0) return;
             currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
-            const wasPlaying = spaceAudio && !spaceAudio.paused;
-            if (wasPlaying) {
-                playSpaceAudio();
-            } else {
-                const clip = spaceAudioClips[currentSpaceClip];
-                spaceNowPlaying.textContent = clip.name;
-            }
+            playSpaceAudio();
         }
 
         // ============== Modal Functions ==============
@@ -1330,16 +1331,23 @@
             const source = allSources.find(s => s.json === sourceJson);
             if (!source) return;
 
+            const wasPlaying = spaceAudio && !spaceAudio.paused;
+
             currentSource = sourceJson;
             localStorage.setItem(SELECTED_SOURCE_KEY, sourceJson);
             currentSourceSpan.textContent = source.name;
             closeSourceModal();
 
             // Stop current playback and load new clips
-            if (spaceAudio && !spaceAudio.paused) {
+            if (wasPlaying) {
                 stopSpaceAudio();
             }
             await loadSpaceClips();
+
+            // Auto-play if was playing before
+            if (wasPlaying) {
+                shuffleSpaceClip();
+            }
         }
 
         // ============== Event Listeners ==============
