@@ -994,7 +994,7 @@
 
             try {
                 const server = await getRadioBrowserServer();
-                const response = await fetch(`${server}/json/stations/bytagexact/${encodeURIComponent(tag)}?limit=100&hidebroken=true`);
+                const response = await fetch(`${server}/json/stations/bytagexact/${encodeURIComponent(tag)}?order=random&hidebroken=true`);
                 if (!response.ok) throw new Error('Failed to fetch stations');
 
                 stations = await response.json();
@@ -1005,8 +1005,8 @@
                 }
 
                 if (wasPlaying) {
-                    // Keep current status and now-playing if still playing
-                    radioStatus.textContent = previousStatus;
+                    // Keep playing status but update station count
+                    radioStatus.textContent = `Playing · ${stations.length}`;
                 } else {
                     radioStatus.textContent = `${stations.length} stations`;
                     radioStatus.className = 'channel-status';
@@ -1044,7 +1044,7 @@
 
             newAudio.addEventListener('playing', () => {
                 if (radioAudio !== newAudio) return;
-                radioStatus.textContent = 'Playing';
+                radioStatus.textContent = `Playing · ${stations.length}`;
                 radioStatus.className = 'channel-status playing';
                 radioToggleBtn.innerHTML = '&#10074;&#10074;';
                 retryCount = 0;
@@ -1139,7 +1139,7 @@
             if (radioAudio) {
                 radioAudio.pause();
             }
-            radioStatus.textContent = 'Paused';
+            radioStatus.textContent = `Paused · ${stations.length}`;
             radioStatus.className = 'channel-status';
             radioToggleBtn.innerHTML = '&#9654;';
         }
@@ -1223,7 +1223,7 @@
             updateVolumes();
 
             spaceAudio.addEventListener('playing', () => {
-                spaceStatus.textContent = 'Playing';
+                spaceStatus.textContent = `Playing · ${spaceAudioClips.length}`;
                 spaceStatus.className = 'channel-status playing';
                 spaceToggleBtn.innerHTML = '&#10074;&#10074;';
             });
@@ -1257,13 +1257,23 @@
             });
         }
 
+        function pauseSpaceAudio() {
+            spaceStopping = true;
+            if (spaceAudio) {
+                spaceAudio.pause();
+            }
+            spaceStatus.textContent = `Paused · ${spaceAudioClips.length}`;
+            spaceStatus.className = 'channel-status';
+            spaceToggleBtn.innerHTML = '&#9654;';
+        }
+
         function stopSpaceAudio() {
             spaceStopping = true;
             if (spaceAudio) {
                 spaceAudio.pause();
                 spaceAudio.currentTime = 0;
             }
-            spaceStatus.textContent = 'Stopped';
+            spaceStatus.textContent = `Stopped · ${spaceAudioClips.length}`;
             spaceStatus.className = 'channel-status';
             spaceToggleBtn.innerHTML = '&#9654;';
             spaceProgress.style.display = 'none';
@@ -1272,7 +1282,7 @@
 
         function toggleSpace() {
             if (spaceAudio && !spaceAudio.paused) {
-                stopSpaceAudio();
+                pauseSpaceAudio();
             } else if (spaceAudio && spaceAudio.src) {
                 spaceStopping = false;
                 spaceProgress.style.display = 'flex';
