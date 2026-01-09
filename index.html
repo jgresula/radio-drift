@@ -105,14 +105,41 @@
             background: rgba(123, 140, 222, 0.25);
         }
 
-        .now-playing {
-            font-size: 0.9rem;
-            color: #ccc;
+        .now-playing-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 0.5rem;
+        }
+
+        .now-playing {
+            flex: 1;
+            font-size: 1.1rem;
+            color: #e0e0e0;
             min-height: 1.4em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .now-playing-actions {
+            display: flex;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .now-playing-actions button {
+            width: 32px;
+            height: 32px;
+            color: #888;
+        }
+
+        .now-playing-actions button:hover {
+            color: #e0e0e0;
+        }
+
+        .now-playing-actions button.active {
+            color: #e91e63;
         }
 
         .now-playing-meta {
@@ -166,14 +193,6 @@
             width: 32px;
             height: 32px;
             font-size: 0.9rem;
-        }
-
-        .btn-favorite {
-            color: #888;
-        }
-
-        .btn-favorite.active {
-            color: #e91e63;
         }
 
         .volume-container {
@@ -516,24 +535,6 @@
             padding: 2rem;
         }
 
-        /* Station info icon */
-        .info-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 0.4rem;
-            color: #555;
-            cursor: pointer;
-            vertical-align: middle;
-            opacity: 0.6;
-            transition: opacity 0.15s ease;
-        }
-
-        .info-icon:hover {
-            opacity: 1;
-            color: #7b8cde;
-        }
-
         /* Station info content */
         .station-info {
             display: flex;
@@ -608,15 +609,21 @@
         .station-info-actions {
             display: flex;
             gap: 0.5rem;
-            margin-top: 0.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
         }
 
         .station-info-actions button {
             flex: 1;
             height: 36px;
             font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .station-info-actions button svg {
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -636,11 +643,16 @@
                     <span>&#9662;</span>
                 </button>
             </div>
-            <div class="now-playing" id="radio-now-playing">Click play to start</div>
+            <div class="now-playing-row">
+                <div class="now-playing" id="radio-now-playing">Click play to start</div>
+                <div class="now-playing-actions">
+                    <button id="radio-favorite" title="Add to favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                    <button id="radio-info" title="Station info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button>
+                </div>
+            </div>
             <div class="now-playing-meta" id="radio-meta"></div>
             <div class="controls">
                 <button id="radio-toggle" title="Play/Pause">&#9654;</button>
-                <button id="radio-favorite" class="btn-small btn-favorite" title="Add to favorites">&#9825;</button>
                 <button id="radio-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
                     <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
@@ -801,6 +813,7 @@
         const radioNowPlaying = document.getElementById('radio-now-playing');
         const radioMeta = document.getElementById('radio-meta');
         const radioFavoriteBtn = document.getElementById('radio-favorite');
+        const radioInfoBtn = document.getElementById('radio-info');
         const tagBtn = document.getElementById('tag-btn');
         const currentTagSpan = document.getElementById('current-tag');
 
@@ -847,7 +860,9 @@
         // ============== SVG Icons ==============
         const speakerOnSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
         const speakerOffSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
-        const infoSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+        const infoSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+        const heartOutlineSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+        const heartFilledSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
 
         // ============== Utility Functions ==============
         function formatDuration(seconds) {
@@ -931,7 +946,7 @@
             const index = favorites.findIndex(f => f.stationuuid === currentStation.stationuuid);
             if (index >= 0) {
                 favorites.splice(index, 1);
-                radioFavoriteBtn.innerHTML = '&#9825;';
+                radioFavoriteBtn.innerHTML = heartOutlineSvg;
                 radioFavoriteBtn.classList.remove('active');
             } else {
                 favorites.push({
@@ -940,7 +955,7 @@
                     url_resolved: currentStation.url_resolved,
                     tags: currentStation.tags
                 });
-                radioFavoriteBtn.innerHTML = '&#9829;';
+                radioFavoriteBtn.innerHTML = heartFilledSvg;
                 radioFavoriteBtn.classList.add('active');
             }
             saveFavorites(favorites);
@@ -948,10 +963,10 @@
 
         function updateFavoriteButton() {
             if (currentStation && isStationFavorite(currentStation.stationuuid)) {
-                radioFavoriteBtn.innerHTML = '&#9829;';
+                radioFavoriteBtn.innerHTML = heartFilledSvg;
                 radioFavoriteBtn.classList.add('active');
             } else {
-                radioFavoriteBtn.innerHTML = '&#9825;';
+                radioFavoriteBtn.innerHTML = heartOutlineSvg;
                 radioFavoriteBtn.classList.remove('active');
             }
         }
@@ -1171,7 +1186,7 @@
 
             currentStation = station;
             retryCount = 0;
-            radioNowPlaying.innerHTML = `${station.name || 'Unknown Station'}<span class="info-icon" id="station-info-btn" title="Station info">${infoSvg}</span>`;
+            radioNowPlaying.textContent = station.name || 'Unknown Station';
             radioMeta.textContent = '';
             radioStatus.textContent = 'Connecting...';
             radioStatus.className = 'channel-status loading';
@@ -1542,7 +1557,7 @@
                         <span class="station-info-value"><a href="https://www.radio-browser.info/history/${station.stationuuid}" target="_blank">View history</a></span>
                     </div>
                     <div class="station-info-actions">
-                        <button onclick="toggleFavoriteFromInfo()">${isFav ? '&#9829; Unfavorite' : '&#9825; Favorite'}</button>
+                        <button onclick="toggleFavoriteFromInfo()">${isFav ? heartFilledSvg + ' Unfavorite' : heartOutlineSvg + ' Favorite'}</button>
                     </div>
                 </div>
             `;
@@ -1678,12 +1693,7 @@
         stationInfoModal.addEventListener('click', (e) => {
             if (e.target === stationInfoModal) closeStationInfoModal();
         });
-        // Use event delegation for the info icon (it's dynamically created)
-        radioNowPlaying.addEventListener('click', (e) => {
-            if (e.target.closest('.info-icon')) {
-                openStationInfoModal();
-            }
-        });
+        radioInfoBtn.addEventListener('click', openStationInfoModal);
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
