@@ -946,6 +946,13 @@
             currentTagSpan.textContent = count > 0 ? `${currentTag} · ${count}` : currentTag;
         }
 
+        function updateSourceDisplay() {
+            const source = allSources.find(s => s.json === currentSource);
+            const name = source ? source.name : 'Unknown';
+            const count = spaceAudioClips.length;
+            currentSourceSpan.textContent = count > 0 ? `${name} · ${count}` : name;
+        }
+
         // ============== Favorites Functions ==============
         function getFavorites() {
             try {
@@ -1384,7 +1391,8 @@
                     name: c.name,
                     url: c.url
                 }));
-                spaceStatus.textContent = `${spaceAudioClips.length} clips`;
+                updateSourceDisplay();
+                spaceStatus.textContent = 'Ready';
                 spaceNowPlaying.textContent = 'Click play to start';
                 currentSpaceClip = 0;
             } catch (error) {
@@ -1421,7 +1429,7 @@
             updateVolumes();
 
             spaceAudio.addEventListener('playing', () => {
-                spaceStatus.textContent = `Playing · ${spaceAudioClips.length}`;
+                spaceStatus.textContent = 'Playing';
                 spaceStatus.className = 'channel-status playing';
                 spaceToggleBtn.innerHTML = '&#10074;&#10074;';
             });
@@ -1460,7 +1468,7 @@
             if (spaceAudio) {
                 spaceAudio.pause();
             }
-            spaceStatus.textContent = `Paused · ${spaceAudioClips.length}`;
+            spaceStatus.textContent = 'Paused';
             spaceStatus.className = 'channel-status';
             spaceToggleBtn.innerHTML = '&#9654;';
         }
@@ -1471,7 +1479,7 @@
                 spaceAudio.pause();
                 spaceAudio.currentTime = 0;
             }
-            spaceStatus.textContent = `Stopped · ${spaceAudioClips.length}`;
+            spaceStatus.textContent = 'Stopped';
             spaceStatus.className = 'channel-status';
             spaceToggleBtn.innerHTML = '&#9654;';
             spaceProgress.style.display = 'none';
