@@ -515,6 +515,109 @@
             font-size: 0.8rem;
             padding: 2rem;
         }
+
+        /* Station info icon */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.4rem;
+            color: #555;
+            cursor: pointer;
+            vertical-align: middle;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+        }
+
+        .info-icon:hover {
+            opacity: 1;
+            color: #7b8cde;
+        }
+
+        /* Station info content */
+        .station-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .station-info-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .station-favicon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            object-fit: contain;
+        }
+
+        .station-info-name {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .station-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+        }
+
+        .station-info-label {
+            color: #888;
+        }
+
+        .station-info-value {
+            color: #ccc;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .station-info-value a {
+            color: #7b8cde;
+            text-decoration: none;
+        }
+
+        .station-info-value a:hover {
+            text-decoration: underline;
+        }
+
+        .station-info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            justify-content: flex-end;
+        }
+
+        .station-info-tag {
+            background: rgba(123, 140, 222, 0.15);
+            color: #7b8cde;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .station-info-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .station-info-actions button {
+            flex: 1;
+            height: 36px;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -643,6 +746,19 @@
         </div>
     </div>
 
+    <!-- Station Info Modal -->
+    <div class="modal-overlay" id="station-info-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Station Info</span>
+                <button class="modal-close" id="station-info-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="station-info-content"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============== Constants ==============
         const BLACKLIST_KEY = 'ambientRadioBlacklist';
@@ -662,6 +778,8 @@
         let currentStation = null;
         let currentSpaceClip = 0;
         let stations = [];
+        let shuffledPlaylist = [];
+        let playlistIndex = 0;
         let allTags = [];
         let allSources = [];
         let currentTag = localStorage.getItem(SELECTED_TAG_KEY) || 'ambient';
@@ -722,9 +840,14 @@
         const sourceModalClose = document.getElementById('source-modal-close');
         const sourceList = document.getElementById('source-list');
 
+        const stationInfoModal = document.getElementById('station-info-modal');
+        const stationInfoClose = document.getElementById('station-info-close');
+        const stationInfoContent = document.getElementById('station-info-content');
+
         // ============== SVG Icons ==============
         const speakerOnSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
         const speakerOffSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+        const infoSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 
         // ============== Utility Functions ==============
         function formatDuration(seconds) {
@@ -732,6 +855,21 @@
             const m = Math.floor((seconds % 3600) / 60);
             const s = Math.floor(seconds % 60);
             return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function createShuffledPlaylist() {
+            const indexes = stations.map((_, i) => i);
+            shuffledPlaylist = shuffleArray(indexes);
+            playlistIndex = 0;
         }
 
         // ============== Blacklist Functions ==============
@@ -1004,6 +1142,9 @@
                     throw new Error('No stations found');
                 }
 
+                // Create shuffled playlist for sequential random play
+                createShuffledPlaylist();
+
                 if (wasPlaying) {
                     // Keep playing status but update station count
                     radioStatus.textContent = `Playing · ${stations.length}`;
@@ -1030,7 +1171,7 @@
 
             currentStation = station;
             retryCount = 0;
-            radioNowPlaying.textContent = station.name || 'Unknown Station';
+            radioNowPlaying.innerHTML = `${station.name || 'Unknown Station'}<span class="info-icon" id="station-info-btn" title="Station info">${infoSvg}</span>`;
             radioMeta.textContent = '';
             radioStatus.textContent = 'Connecting...';
             radioStatus.className = 'channel-status loading';
@@ -1105,15 +1246,34 @@
             }, 500);
         }
 
-        function playRandomStation() {
-            const available = getAvailableStations();
-            if (available.length === 0) {
-                radioNowPlaying.textContent = stations.length ? 'All stations temporarily unavailable' : 'No stations available';
+        function playNextStation() {
+            if (stations.length === 0) {
+                radioNowPlaying.textContent = 'No stations available';
                 return;
             }
 
-            const randomIndex = Math.floor(Math.random() * available.length);
-            playStation(available[randomIndex]);
+            // Find next non-blacklisted station in shuffled playlist
+            let attempts = 0;
+            while (attempts < stations.length) {
+                const stationIndex = shuffledPlaylist[playlistIndex];
+                const station = stations[stationIndex];
+
+                // Advance playlist index (loop back to start)
+                playlistIndex = (playlistIndex + 1) % shuffledPlaylist.length;
+
+                if (!isStationBlacklisted(station.stationuuid)) {
+                    playStation(station);
+                    return;
+                }
+                attempts++;
+            }
+
+            radioNowPlaying.textContent = 'All stations temporarily unavailable';
+        }
+
+        // Alias for backward compatibility
+        function playRandomStation() {
+            playNextStation();
         }
 
         function checkMediaSessionMetadata() {
@@ -1329,6 +1489,70 @@
             sourceModal.classList.remove('active');
         }
 
+        // Station info modal functions
+        function openStationInfoModal() {
+            if (!currentStation) return;
+            stationInfoModal.classList.add('active');
+            renderStationInfo();
+        }
+
+        function closeStationInfoModal() {
+            stationInfoModal.classList.remove('active');
+        }
+
+        function renderStationInfo() {
+            if (!currentStation) return;
+
+            const station = currentStation;
+            const isFav = isStationFavorite(station.stationuuid);
+            const tags = station.tags ? station.tags.split(',').filter(t => t.trim()).slice(0, 5) : [];
+
+            stationInfoContent.innerHTML = `
+                <div class="station-info">
+                    <div class="station-info-header">
+                        ${station.favicon ? `<img src="${station.favicon}" class="station-favicon" onerror="this.style.display='none'">` : ''}
+                        <div class="station-info-name">${station.name || 'Unknown Station'}</div>
+                    </div>
+                    ${station.homepage ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Homepage</span>
+                        <span class="station-info-value"><a href="${station.homepage}" target="_blank">${new URL(station.homepage).hostname}</a></span>
+                    </div>` : ''}
+                    ${station.countrycode ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Country</span>
+                        <span class="station-info-value">${station.countrycode}</span>
+                    </div>` : ''}
+                    ${station.codec ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Codec</span>
+                        <span class="station-info-value">${station.codec}${station.bitrate ? ` @ ${station.bitrate} kbps` : ''}</span>
+                    </div>` : ''}
+                    ${tags.length > 0 ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Tags</span>
+                        <span class="station-info-value">
+                            <div class="station-info-tags">
+                                ${tags.map(t => `<span class="station-info-tag">${t.trim()}</span>`).join('')}
+                            </div>
+                        </span>
+                    </div>` : ''}
+                    <div class="station-info-row">
+                        <span class="station-info-label">Radio Browser</span>
+                        <span class="station-info-value"><a href="https://www.radio-browser.info/history/${station.stationuuid}" target="_blank">View history</a></span>
+                    </div>
+                    <div class="station-info-actions">
+                        <button onclick="toggleFavoriteFromInfo()">${isFav ? '&#9829; Unfavorite' : '&#9825; Favorite'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFavoriteFromInfo() {
+            toggleFavorite();
+            renderStationInfo();
+        }
+
         function renderSources() {
             sourceList.innerHTML = allSources.map(source => `
                 <div class="tag-item ${source.json === currentSource ? 'selected' : ''}" data-source="${source.json}">
@@ -1449,12 +1673,25 @@
             }
         });
 
+        // Station info modal
+        stationInfoClose.addEventListener('click', closeStationInfoModal);
+        stationInfoModal.addEventListener('click', (e) => {
+            if (e.target === stationInfoModal) closeStationInfoModal();
+        });
+        // Use event delegation for the info icon (it's dynamically created)
+        radioNowPlaying.addEventListener('click', (e) => {
+            if (e.target.closest('.info-icon')) {
+                openStationInfoModal();
+            }
+        });
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeTagModal();
                 closeFavoritesModal();
                 closeSourceModal();
+                closeStationInfoModal();
             }
         });
 
