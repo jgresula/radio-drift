@@ -260,6 +260,10 @@
             font-size: 0.75rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .favorites-btn {
@@ -926,10 +930,20 @@
             blacklist[stationId] = entry;
             saveBlacklist(blacklist);
             console.log(`Station ${stationId} blacklisted for ${Math.round(ttl / 3600000)}h (fail #${entry.fails})`);
+            updateTagDisplay();
         }
 
         function getAvailableStations() {
             return stations.filter(s => !isStationBlacklisted(s.stationuuid));
+        }
+
+        function getAvailableStationCount() {
+            return getAvailableStations().length;
+        }
+
+        function updateTagDisplay() {
+            const count = getAvailableStationCount();
+            currentTagSpan.textContent = count > 0 ? `${currentTag} · ${count}` : currentTag;
         }
 
         // ============== Favorites Functions ==============
@@ -1167,11 +1181,13 @@
                 // Create shuffled playlist for sequential random play
                 createShuffledPlaylist();
 
+                // Update tag display with station count
+                updateTagDisplay();
+
                 if (wasPlaying) {
-                    // Keep playing status but update station count
-                    radioStatus.textContent = `Playing · ${stations.length}`;
+                    radioStatus.textContent = 'Playing';
                 } else {
-                    radioStatus.textContent = `${stations.length} stations`;
+                    radioStatus.textContent = 'Ready';
                     radioStatus.className = 'channel-status';
                     radioNowPlaying.textContent = 'Click play to start';
                 }
@@ -1207,7 +1223,7 @@
 
             newAudio.addEventListener('playing', () => {
                 if (radioAudio !== newAudio) return;
-                radioStatus.textContent = `Playing · ${stations.length}`;
+                radioStatus.textContent = 'Playing';
                 radioStatus.className = 'channel-status playing';
                 radioToggleBtn.innerHTML = '&#10074;&#10074;';
                 retryCount = 0;
@@ -1321,7 +1337,7 @@
             if (radioAudio) {
                 radioAudio.pause();
             }
-            radioStatus.textContent = `Paused · ${stations.length}`;
+            radioStatus.textContent = 'Paused';
             radioStatus.className = 'channel-status';
             radioToggleBtn.innerHTML = '&#9654;';
         }
