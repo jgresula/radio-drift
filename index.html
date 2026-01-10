@@ -1150,27 +1150,121 @@
             }
         }
 
-        // ============== Radio Functions ==============
-        let radioBrowserServers = [];
+        // ============== Radio Browser Server Selection ==============
+        //
+        // Strategy for finding a working Radio Browser API server:
+        //
+        // 1. Try LAST WORKING SERVER first (from localStorage)
+        //    - Fastest path for returning users
+        //    - Most likely to still work
+        //
+        // 2. Try OTHER CACHED SERVERS (from localStorage, shuffled)
+        //    - Server list cached with 24h TTL
+        //    - Shuffled to distribute load across servers
+        //
+        // 3. FETCH FRESH SERVER LIST (if cache expired/empty)
+        //    - From https://all.api.radio-browser.info/json/servers
+        //    - Updates the cache on success
+        //
+        // 4. HARDCODED FALLBACK SERVERS (last resort)
+        //    - Used when server list endpoint is down
+        //    - Guarantees we always have servers to try
+        //
+        // On successful request: save server as "last working" for next time
+        //
+        const RADIO_BROWSER_LAST_SERVER_KEY = 'radioBrowserLastServer';
+        const RADIO_BROWSER_SERVERS_KEY = 'radioBrowserServers';
+        const RADIO_BROWSER_SERVERS_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-        async function getRadioBrowserServers() {
-            if (radioBrowserServers.length > 0) return radioBrowserServers;
+        const RADIO_BROWSER_FALLBACK_SERVERS = [
+            'https://fi1.api.radio-browser.info',
+            'https://de1.api.radio-browser.info',
+            'https://de2.api.radio-browser.info'
+        ];
+
+        function getLastWorkingServer() {
+            return localStorage.getItem(RADIO_BROWSER_LAST_SERVER_KEY);
+        }
+
+        function saveLastWorkingServer(server) {
+            localStorage.setItem(RADIO_BROWSER_LAST_SERVER_KEY, server);
+        }
+
+        function getCachedServers() {
+            try {
+                const data = JSON.parse(localStorage.getItem(RADIO_BROWSER_SERVERS_KEY));
+                if (!data || !data.servers || !data.timestamp) return null;
+                if (Date.now() - data.timestamp > RADIO_BROWSER_SERVERS_TTL) return null;
+                return data.servers;
+            } catch { return null; }
+        }
+
+        function cacheServers(servers) {
+            localStorage.setItem(RADIO_BROWSER_SERVERS_KEY, JSON.stringify({
+                servers,
+                timestamp: Date.now()
+            }));
+        }
+
+        async function fetchServerList() {
             const response = await fetch('https://all.api.radio-browser.info/json/servers');
             if (!response.ok) throw new Error('Failed to fetch server list');
             const servers = await response.json();
-            if (!servers || servers.length === 0) throw new Error('No servers available');
-            radioBrowserServers = servers.map(s => `https://${s.name}`);
-            return radioBrowserServers;
+            if (!servers || servers.length === 0) throw new Error('No servers in list');
+            return servers.map(s => `https://${s.name}`);
+        }
+
+        async function getServersToTry() {
+            const servers = [];
+            const seen = new Set();
+
+            const addServer = (server) => {
+                if (server && !seen.has(server)) {
+                    seen.add(server);
+                    servers.push(server);
+                }
+            };
+
+            const addServers = (list, shuffle = false) => {
+                if (!list) return;
+                const toAdd = shuffle ? [...list].sort(() => Math.random() - 0.5) : list;
+                toAdd.forEach(addServer);
+            };
+
+            // 1. Last working server first
+            addServer(getLastWorkingServer());
+
+            // 2. Other cached servers (shuffled)
+            addServers(getCachedServers(), true);
+
+            // 3. Try to fetch fresh list if we don't have enough servers
+            if (servers.length < 3) {
+                try {
+                    const fresh = await fetchServerList();
+                    cacheServers(fresh);
+                    addServers(fresh, true);
+                } catch (err) {
+                    console.warn('Failed to fetch Radio Browser server list:', err.message);
+                }
+            }
+
+            // 4. Hardcoded fallbacks
+            addServers(RADIO_BROWSER_FALLBACK_SERVERS, true);
+
+            return servers;
         }
 
         async function radioBrowserFetch(path) {
-            const servers = await getRadioBrowserServers();
-            const shuffled = [...servers].sort(() => Math.random() - 0.5);
+            const servers = await getServersToTry();
             let lastError;
-            for (const server of shuffled) {
+
+            for (const server of servers) {
                 try {
                     const response = await fetch(`${server}${path}`);
-                    if (response.ok) return response;
+                    if (response.ok) {
+                        saveLastWorkingServer(server);
+                        return response;
+                    }
                     lastError = new Error(`Server ${server} returned ${response.status}`);
                     console.warn(`Radio Browser server ${server} failed with ${response.status}, trying next...`);
                 } catch (err) {
@@ -1178,6 +1272,7 @@
                     console.warn(`Radio Browser server ${server} error:`, err.message, '- trying next...');
                 }
             }
+
             throw lastError || new Error('All Radio Browser servers failed');
         }
 
