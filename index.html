@@ -1842,6 +1842,8 @@
             if (state === YT.PlayerState.PLAYING) {
                 atcPlayer.pauseVideo();
             } else {
+                // Seek to live edge before playing
+                atcPlayer.seekTo(atcPlayer.getDuration(), true);
                 atcPlayer.playVideo();
             }
         }
