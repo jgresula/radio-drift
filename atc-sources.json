@@ -1,10 +1,66 @@
 [
     {
+        "id": "Buc9kMfTerg",
+        "name": "ATL - Atlanta Flightradar24 with ATC"
+    },
+    {
+        "id": "-c8Mfiu5wzI",
+        "name": "DUB - Dublin Airport Live ATC & Tracking"
+    },
+    {
+        "id": "ygC5wni2DMQ",
+        "name": "HKG - Hong Kong Int'l Airport ATC"
+    },
+    {
+        "id": "RQmWYMSV-pk",
+        "name": "HNL - Honolulu ATC + Radar"
+    },
+    {
+        "id": "xq_kuLD8T0A",
+        "name": "JFK - New York Kennedy ATC"
+    },
+    {
+        "id": "cn8_34TuMaM",
+        "name": "LAS - Las Vegas 24/7 Runways 26R & 26L"
+    },
+    {
         "id": "VjqKog3XwZ8",
-        "name": "LAX Airport - Runways 24L & 24R"
+        "name": "LAX - Los Angeles Runways 24L & 24R"
+    },
+    {
+        "id": "UQaSS4_VAV4",
+        "name": "LAX - Los Angeles Runways 25L & 25R"
+    },
+    {
+        "id": "xWvWtk2aOfI",
+        "name": "LAX - Los Angeles Runway with ATC"
+    },
+    {
+        "id": "t0GrpAgdBFI",
+        "name": "LAX - Los Angeles Realtime Sim 24HRS"
+    },
+    {
+        "id": "rwYhIuGWZvc",
+        "name": "LGA - LaGuardia New York ATC"
+    },
+    {
+        "id": "OXeFcz3lEz4",
+        "name": "MIA - Miami Runway 9/27 with Tower"
+    },
+    {
+        "id": "cMdLxB3mOdo",
+        "name": "SEA - Seattle-Tacoma ATC & Radar"
     },
     {
         "id": "-VHAib_44cU",
-        "name": "SFO Airport - San Francisco International"
+        "name": "SFO - San Francisco International"
+    },
+    {
+        "id": "vbcbIow1tP8",
+        "name": "SFO - San Francisco Tracking & Tower ATC"
+    },
+    {
+        "id": "NOZVUBsCDEI",
+        "name": "TPE - Taiwan Taoyuan Int'l ATC"
     }
 ]
