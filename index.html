@@ -747,6 +747,7 @@
                     <input type="range" class="volume-slider" id="atc-volume" min="0" max="100" value="50">
                     <span class="volume-value" id="atc-volume-value">50%</span>
                 </div>
+                <button id="atc-fullscreen" class="btn-small" title="Fullscreen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg></button>
             </div>
         </div>
 
@@ -936,6 +937,7 @@
         const youtubeContainer = document.getElementById('youtube-container');
         const atcDisabledMessage = document.getElementById('atc-disabled-message');
         const atcControls = document.getElementById('atc-controls');
+        const atcFullscreenBtn = document.getElementById('atc-fullscreen');
 
         const masterVolumeSlider = document.getElementById('master-volume');
         const masterVolumeValue = document.getElementById('master-volume-value');
@@ -1775,7 +1777,8 @@
                     modestbranding: 1,
                     rel: 0,
                     showinfo: 0,
-                    iv_load_policy: 3
+                    iv_load_policy: 3,
+                    playsinline: 1
                 },
                 events: {
                     onReady: onAtcPlayerReady,
@@ -1897,6 +1900,19 @@
 
         function closeAtcSourceModal() {
             atcSourceModal.classList.remove('active');
+        }
+
+        function toggleAtcFullscreen() {
+            const iframe = youtubeContainer.querySelector('iframe');
+            if (!iframe) return;
+
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            }
         }
 
         // Load YouTube IFrame API
@@ -2075,6 +2091,8 @@
                 selectAtcSource(sourceId === 'none' ? null : sourceId);
             }
         });
+
+        atcFullscreenBtn.addEventListener('click', toggleAtcFullscreen);
 
         spaceProgressBar.addEventListener('click', (e) => {
             if (spaceAudio && spaceAudio.duration) {
