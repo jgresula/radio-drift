@@ -635,6 +635,33 @@
         .station-info-actions button svg {
             flex-shrink: 0;
         }
+
+        /* YouTube embed styles */
+        .youtube-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .youtube-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .atc-info {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -672,6 +699,26 @@
             <div class="button-row">
                 <button class="shuffle-btn" id="radio-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
                 <button class="favorites-btn" id="open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+            </div>
+        </div>
+
+        <!-- Live ATC Channel -->
+        <div class="channel">
+            <div class="channel-header">
+                <span class="channel-title">Live ATC</span>
+                <span class="channel-status" id="atc-status">Ready</span>
+            </div>
+            <div class="atc-info">Live air traffic control audio from around the world</div>
+            <div class="youtube-container">
+                <div id="atc-player"></div>
+            </div>
+            <div class="controls">
+                <button id="atc-toggle" title="Play/Pause">&#9654;</button>
+                <button id="atc-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
+                <div class="volume-container">
+                    <input type="range" class="volume-slider" id="atc-volume" min="0" max="100" value="50">
+                    <span class="volume-value" id="atc-volume-value">50%</span>
+                </div>
             </div>
         </div>
 
@@ -720,6 +767,7 @@
 
         <div class="footer">
             Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
+            ATC via <a href="https://www.youtube.com/watch?v=-VHAib_44cU" target="_blank">YouTube</a> |
             Space audio: <a href="https://archive.org/" target="_blank">Archive.org</a> (NASA/Public Domain)
         </div>
     </div>
@@ -811,8 +859,11 @@
         let masterMuted = false;
         let radioMuted = false;
         let spaceMuted = false;
+        let atcMuted = false;
         let masterVolume = 1;
         let retryCount = 0;
+        let atcPlayer = null;
+        let atcPlayerReady = false;
 
         // ============== DOM Elements ==============
         const radioToggleBtn = document.getElementById('radio-toggle');
@@ -838,6 +889,12 @@
         const spaceProgressFill = document.getElementById('space-progress-fill');
         const spaceCurrent = document.getElementById('space-current');
         const spaceDuration = document.getElementById('space-duration');
+
+        const atcToggleBtn = document.getElementById('atc-toggle');
+        const atcVolumeSlider = document.getElementById('atc-volume');
+        const atcVolumeValue = document.getElementById('atc-volume-value');
+        const atcStatus = document.getElementById('atc-status');
+        const atcMuteBtn = document.getElementById('atc-mute');
 
         const masterVolumeSlider = document.getElementById('master-volume');
         const masterVolumeValue = document.getElementById('master-volume-value');
@@ -1147,6 +1204,11 @@
             if (spaceAudio) {
                 const spaceVol = spaceMuted ? 0 : (spaceVolumeSlider.value / 100);
                 spaceAudio.volume = spaceVol * effectiveMaster;
+            }
+            if (atcPlayer && atcPlayerReady) {
+                const atcVol = atcMuted ? 0 : (atcVolumeSlider.value / 100);
+                // YouTube volume is 0-100
+                atcPlayer.setVolume(atcVol * effectiveMaster * 100);
             }
         }
 
@@ -1615,6 +1677,85 @@
             playSpaceAudio();
         }
 
+        // ============== ATC (YouTube) Functions ==============
+        function onYouTubeIframeAPIReady() {
+            atcPlayer = new YT.Player('atc-player', {
+                videoId: '-VHAib_44cU',
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3
+                },
+                events: {
+                    onReady: onAtcPlayerReady,
+                    onStateChange: onAtcPlayerStateChange,
+                    onError: onAtcPlayerError
+                }
+            });
+        }
+
+        function onAtcPlayerReady(event) {
+            atcPlayerReady = true;
+            atcStatus.textContent = 'Ready';
+            atcStatus.className = 'channel-status';
+            // Set initial volume
+            updateVolumes();
+        }
+
+        function onAtcPlayerStateChange(event) {
+            switch (event.data) {
+                case YT.PlayerState.PLAYING:
+                    atcStatus.textContent = 'Playing';
+                    atcStatus.className = 'channel-status playing';
+                    atcToggleBtn.innerHTML = '&#10074;&#10074;';
+                    break;
+                case YT.PlayerState.PAUSED:
+                    atcStatus.textContent = 'Paused';
+                    atcStatus.className = 'channel-status';
+                    atcToggleBtn.innerHTML = '&#9654;';
+                    break;
+                case YT.PlayerState.BUFFERING:
+                    atcStatus.textContent = 'Buffering...';
+                    atcStatus.className = 'channel-status loading';
+                    break;
+                case YT.PlayerState.ENDED:
+                    // For live streams this shouldn't happen, but handle it
+                    atcStatus.textContent = 'Ended';
+                    atcStatus.className = 'channel-status';
+                    atcToggleBtn.innerHTML = '&#9654;';
+                    break;
+            }
+        }
+
+        function onAtcPlayerError(event) {
+            console.error('ATC player error:', event.data);
+            atcStatus.textContent = 'Error';
+            atcStatus.className = 'channel-status error';
+        }
+
+        function toggleAtc() {
+            if (!atcPlayerReady) return;
+            const state = atcPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                atcPlayer.pauseVideo();
+            } else {
+                atcPlayer.playVideo();
+            }
+        }
+
+        // Load YouTube IFrame API
+        function loadYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
         // ============== Modal Functions ==============
         function openTagModal() {
             tagModal.classList.add('active');
@@ -1757,6 +1898,19 @@
             updateVolumes();
         });
 
+        atcToggleBtn.addEventListener('click', toggleAtc);
+        atcVolumeSlider.addEventListener('input', (e) => {
+            atcVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+        });
+
+        atcMuteBtn.addEventListener('click', () => {
+            atcMuted = !atcMuted;
+            atcMuteBtn.innerHTML = atcMuted ? speakerOffSvg : speakerOnSvg;
+            atcMuteBtn.title = atcMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
         spaceProgressBar.addEventListener('click', (e) => {
             if (spaceAudio && spaceAudio.duration) {
                 const rect = spaceProgressBar.getBoundingClientRect();
@@ -1852,6 +2006,7 @@
         fetchTags();
         fetchStationsByTag(currentTag);
         loadSources();
+        loadYouTubeAPI();
     </script>
 </body>
 </html>
