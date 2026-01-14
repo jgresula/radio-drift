@@ -662,11 +662,129 @@
             margin-bottom: 1rem;
             font-style: italic;
         }
+
+        /* YouTube size variants */
+        .youtube-container.size-small {
+            padding-bottom: 28.125%; /* Half height */
+        }
+
+        .youtube-container.size-medium {
+            padding-bottom: 56.25%; /* Default 16:9 */
+        }
+
+        .youtube-container.size-large {
+            padding-bottom: 75%; /* 4:3 ish, taller */
+        }
+
+        .youtube-container.audio-only {
+            padding-bottom: 0;
+            height: 0;
+            margin-bottom: 0;
+        }
+
+        .youtube-container.audio-only iframe {
+            display: none;
+        }
+
+        .atc-options {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .atc-options .tag-btn {
+            flex-shrink: 0;
+        }
+
+        .option-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.65rem;
+            color: #888;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .option-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option-toggle.active {
+            background: rgba(123, 140, 222, 0.2);
+            border-color: rgba(123, 140, 222, 0.4);
+            color: #7b8cde;
+        }
+
+        .option-toggle input {
+            display: none;
+        }
+
+        .size-selector {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .size-btn {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
+            padding: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .size-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .size-btn.active {
+            background: rgba(123, 140, 222, 0.2);
+            border-color: rgba(123, 140, 222, 0.4);
+            color: #7b8cde;
+        }
+
+        .fullscreen-btn {
+            width: 28px;
+            height: 28px;
+        }
+
+        .atc-disabled-message {
+            text-align: center;
+            color: #666;
+            font-size: 0.8rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Ambient Mixer</h1>
+
+        <!-- Master Volume -->
+        <div class="master-volume">
+            <span class="master-label">Master</span>
+            <button id="master-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
+            <div class="volume-container" style="flex: 1;">
+                <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
+                <span class="volume-value" id="master-volume-value">100%</span>
+            </div>
+        </div>
 
         <!-- Ambient Radio Channel -->
         <div class="channel">
@@ -703,16 +821,37 @@
         </div>
 
         <!-- Live ATC Channel -->
-        <div class="channel">
+        <div class="channel" id="atc-channel">
             <div class="channel-header">
                 <span class="channel-title">Live ATC</span>
                 <span class="channel-status" id="atc-status">Ready</span>
             </div>
-            <div class="atc-info">Live air traffic control audio from around the world</div>
-            <div class="youtube-container">
+            <div class="atc-options">
+                <button class="tag-btn" id="atc-source-btn" title="Change ATC source">
+                    <span id="current-atc-source">Select source</span>
+                    <span>&#9662;</span>
+                </button>
+                <label class="option-toggle" id="audio-only-toggle" title="Audio only (low bandwidth)">
+                    <input type="checkbox" id="audio-only-checkbox">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+                    Audio Only
+                </label>
+                <div class="size-selector" id="size-selector">
+                    <button class="size-btn" data-size="small" title="Small">S</button>
+                    <button class="size-btn active" data-size="medium" title="Medium">M</button>
+                    <button class="size-btn" data-size="large" title="Large">L</button>
+                </div>
+                <button class="btn-small fullscreen-btn" id="atc-fullscreen" title="Fullscreen">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+                </button>
+            </div>
+            <div class="youtube-container size-medium" id="youtube-container">
                 <div id="atc-player"></div>
             </div>
-            <div class="controls">
+            <div class="atc-disabled-message" id="atc-disabled-message" style="display: none;">
+                ATC source disabled. Select a source to enable.
+            </div>
+            <div class="controls" id="atc-controls">
                 <button id="atc-toggle" title="Play/Pause">&#9654;</button>
                 <button id="atc-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
@@ -755,19 +894,8 @@
             </div>
         </div>
 
-        <!-- Master Volume -->
-        <div class="master-volume">
-            <span class="master-label">Master</span>
-            <button id="master-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-            <div class="volume-container" style="flex: 1;">
-                <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
-                <span class="volume-value" id="master-volume-value">100%</span>
-            </div>
-        </div>
-
         <div class="footer">
             Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
-            ATC via <a href="https://www.youtube.com/watch?v=-VHAib_44cU" target="_blank">YouTube</a> |
             Space audio: <a href="https://archive.org/" target="_blank">Archive.org</a> (NASA/Public Domain)
         </div>
     </div>
@@ -829,6 +957,19 @@
         </div>
     </div>
 
+    <!-- ATC Source Selection Modal -->
+    <div class="modal-overlay" id="atc-source-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Select ATC Source</span>
+                <button class="modal-close" id="atc-source-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tag-list" id="atc-source-list"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============== Constants ==============
         const BLACKLIST_KEY = 'ambientRadioBlacklist';
@@ -836,6 +977,9 @@
         const TAGS_CACHE_KEY = 'ambientRadioTags';
         const SELECTED_TAG_KEY = 'ambientRadioSelectedTag';
         const SELECTED_SOURCE_KEY = 'ambientSpaceSource';
+        const SELECTED_ATC_SOURCE_KEY = 'ambientAtcSource';
+        const ATC_AUDIO_ONLY_KEY = 'ambientAtcAudioOnly';
+        const ATC_SIZE_KEY = 'ambientAtcSize';
         const BASE_TTL = 6 * 60 * 60 * 1000; // 6 hours
         const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
         const TAGS_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 day
@@ -852,8 +996,12 @@
         let playlistIndex = 0;
         let allTags = [];
         let allSources = [];
+        let allAtcSources = [];
         let currentTag = localStorage.getItem(SELECTED_TAG_KEY) || 'ambient';
         let currentSource = localStorage.getItem(SELECTED_SOURCE_KEY) || 'apollo11.json';
+        let currentAtcSource = localStorage.getItem(SELECTED_ATC_SOURCE_KEY) || null;
+        let atcAudioOnly = localStorage.getItem(ATC_AUDIO_ONLY_KEY) === 'true';
+        let atcSize = localStorage.getItem(ATC_SIZE_KEY) || 'medium';
         let radioStopping = false;
         let spaceStopping = false;
         let masterMuted = false;
@@ -895,6 +1043,18 @@
         const atcVolumeValue = document.getElementById('atc-volume-value');
         const atcStatus = document.getElementById('atc-status');
         const atcMuteBtn = document.getElementById('atc-mute');
+        const atcSourceBtn = document.getElementById('atc-source-btn');
+        const currentAtcSourceSpan = document.getElementById('current-atc-source');
+        const atcSourceModal = document.getElementById('atc-source-modal');
+        const atcSourceModalClose = document.getElementById('atc-source-modal-close');
+        const atcSourceList = document.getElementById('atc-source-list');
+        const youtubeContainer = document.getElementById('youtube-container');
+        const atcDisabledMessage = document.getElementById('atc-disabled-message');
+        const atcControls = document.getElementById('atc-controls');
+        const audioOnlyToggle = document.getElementById('audio-only-toggle');
+        const audioOnlyCheckbox = document.getElementById('audio-only-checkbox');
+        const sizeSelector = document.getElementById('size-selector');
+        const atcFullscreenBtn = document.getElementById('atc-fullscreen');
 
         const masterVolumeSlider = document.getElementById('master-volume');
         const masterVolumeValue = document.getElementById('master-volume-value');
@@ -1678,9 +1838,73 @@
         }
 
         // ============== ATC (YouTube) Functions ==============
-        function onYouTubeIframeAPIReady() {
+        async function loadAtcSources() {
+            try {
+                const response = await fetch('atc-sources.json');
+                if (!response.ok) throw new Error('Failed to load ATC sources');
+                allAtcSources = await response.json();
+
+                // Initialize UI based on saved state
+                initAtcUI();
+
+                // If we have a saved source, load it
+                if (currentAtcSource && allAtcSources.some(s => s.id === currentAtcSource)) {
+                    const source = allAtcSources.find(s => s.id === currentAtcSource);
+                    currentAtcSourceSpan.textContent = source.name;
+                } else {
+                    currentAtcSource = null;
+                    currentAtcSourceSpan.textContent = 'None';
+                    showAtcDisabled();
+                }
+            } catch (error) {
+                console.error('Error loading ATC sources:', error);
+                currentAtcSourceSpan.textContent = 'Error loading';
+            }
+        }
+
+        function initAtcUI() {
+            // Set audio-only state
+            if (atcAudioOnly) {
+                audioOnlyToggle.classList.add('active');
+                audioOnlyCheckbox.checked = true;
+                youtubeContainer.classList.add('audio-only');
+            }
+
+            // Set size state
+            youtubeContainer.className = youtubeContainer.className.replace(/size-\w+/g, '');
+            youtubeContainer.classList.add(`size-${atcSize}`);
+            sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.size === atcSize);
+            });
+        }
+
+        function showAtcDisabled() {
+            youtubeContainer.style.display = 'none';
+            atcDisabledMessage.style.display = 'block';
+            atcControls.style.display = 'none';
+            atcStatus.textContent = 'Disabled';
+            atcStatus.className = 'channel-status';
+        }
+
+        function showAtcEnabled() {
+            youtubeContainer.style.display = 'block';
+            atcDisabledMessage.style.display = 'none';
+            atcControls.style.display = 'flex';
+        }
+
+        function createAtcPlayer(videoId) {
+            // Destroy existing player if any
+            if (atcPlayer) {
+                atcPlayer.destroy();
+                atcPlayer = null;
+                atcPlayerReady = false;
+            }
+
+            // Create new player element
+            youtubeContainer.innerHTML = '<div id="atc-player"></div>';
+
             atcPlayer = new YT.Player('atc-player', {
-                videoId: '-VHAib_44cU',
+                videoId: videoId,
                 playerVars: {
                     autoplay: 0,
                     controls: 0,
@@ -1697,6 +1921,15 @@
                     onError: onAtcPlayerError
                 }
             });
+
+            showAtcEnabled();
+        }
+
+        function onYouTubeIframeAPIReady() {
+            // Only create player if we have a source selected
+            if (currentAtcSource) {
+                createAtcPlayer(currentAtcSource);
+            }
         }
 
         function onAtcPlayerReady(event) {
@@ -1739,13 +1972,105 @@
         }
 
         function toggleAtc() {
-            if (!atcPlayerReady) return;
+            if (!atcPlayerReady || !currentAtcSource) return;
             const state = atcPlayer.getPlayerState();
             if (state === YT.PlayerState.PLAYING) {
                 atcPlayer.pauseVideo();
             } else {
                 atcPlayer.playVideo();
             }
+        }
+
+        function selectAtcSource(sourceId) {
+            const wasPlaying = atcPlayer && atcPlayerReady && atcPlayer.getPlayerState() === YT.PlayerState.PLAYING;
+
+            if (sourceId === null) {
+                // None selected
+                currentAtcSource = null;
+                localStorage.removeItem(SELECTED_ATC_SOURCE_KEY);
+                currentAtcSourceSpan.textContent = 'None';
+
+                if (atcPlayer) {
+                    atcPlayer.destroy();
+                    atcPlayer = null;
+                    atcPlayerReady = false;
+                }
+                showAtcDisabled();
+            } else {
+                const source = allAtcSources.find(s => s.id === sourceId);
+                if (!source) return;
+
+                currentAtcSource = sourceId;
+                localStorage.setItem(SELECTED_ATC_SOURCE_KEY, sourceId);
+                currentAtcSourceSpan.textContent = source.name;
+
+                // Create or update player
+                createAtcPlayer(sourceId);
+            }
+
+            closeAtcSourceModal();
+        }
+
+        function toggleAtcAudioOnly() {
+            atcAudioOnly = !atcAudioOnly;
+            localStorage.setItem(ATC_AUDIO_ONLY_KEY, atcAudioOnly);
+
+            audioOnlyToggle.classList.toggle('active', atcAudioOnly);
+            audioOnlyCheckbox.checked = atcAudioOnly;
+            youtubeContainer.classList.toggle('audio-only', atcAudioOnly);
+        }
+
+        function setAtcSize(size) {
+            atcSize = size;
+            localStorage.setItem(ATC_SIZE_KEY, size);
+
+            youtubeContainer.className = youtubeContainer.className.replace(/size-\w+/g, '');
+            youtubeContainer.classList.add(`size-${size}`);
+
+            sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.size === size);
+            });
+        }
+
+        function toggleAtcFullscreen() {
+            if (!youtubeContainer || atcAudioOnly) return;
+
+            const iframe = youtubeContainer.querySelector('iframe');
+            if (!iframe) return;
+
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            }
+        }
+
+        function renderAtcSources() {
+            const noneSelected = currentAtcSource === null;
+            let html = `
+                <div class="tag-item ${noneSelected ? 'selected' : ''}" data-atc-source="none">
+                    <span class="tag-name">None (Disabled)</span>
+                </div>
+            `;
+
+            html += allAtcSources.map(source => `
+                <div class="tag-item ${source.id === currentAtcSource ? 'selected' : ''}" data-atc-source="${source.id}">
+                    <span class="tag-name">${source.name}</span>
+                </div>
+            `).join('');
+
+            atcSourceList.innerHTML = html;
+        }
+
+        function openAtcSourceModal() {
+            atcSourceModal.classList.add('active');
+            renderAtcSources();
+        }
+
+        function closeAtcSourceModal() {
+            atcSourceModal.classList.remove('active');
         }
 
         // Load YouTube IFrame API
@@ -1911,6 +2236,31 @@
             updateVolumes();
         });
 
+        // ATC source and options
+        atcSourceBtn.addEventListener('click', openAtcSourceModal);
+        atcSourceModalClose.addEventListener('click', closeAtcSourceModal);
+        atcSourceModal.addEventListener('click', (e) => {
+            if (e.target === atcSourceModal) closeAtcSourceModal();
+        });
+        atcSourceList.addEventListener('click', (e) => {
+            const item = e.target.closest('.tag-item');
+            if (item) {
+                const sourceId = item.dataset.atcSource;
+                selectAtcSource(sourceId === 'none' ? null : sourceId);
+            }
+        });
+
+        audioOnlyToggle.addEventListener('click', toggleAtcAudioOnly);
+
+        sizeSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.size-btn');
+            if (btn) {
+                setAtcSize(btn.dataset.size);
+            }
+        });
+
+        atcFullscreenBtn.addEventListener('click', toggleAtcFullscreen);
+
         spaceProgressBar.addEventListener('click', (e) => {
             if (spaceAudio && spaceAudio.duration) {
                 const rect = spaceProgressBar.getBoundingClientRect();
@@ -1998,6 +2348,7 @@
                 closeFavoritesModal();
                 closeSourceModal();
                 closeStationInfoModal();
+                closeAtcSourceModal();
             }
         });
 
@@ -2006,6 +2357,7 @@
         fetchTags();
         fetchStationsByTag(currentTag);
         loadSources();
+        loadAtcSources();
         loadYouTubeAPI();
     </script>
 </body>
