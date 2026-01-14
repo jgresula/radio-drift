@@ -663,104 +663,6 @@
             font-style: italic;
         }
 
-        /* YouTube size variants */
-        .youtube-container.size-small {
-            padding-bottom: 28.125%; /* Half height */
-        }
-
-        .youtube-container.size-medium {
-            padding-bottom: 56.25%; /* Default 16:9 */
-        }
-
-        .youtube-container.size-large {
-            padding-bottom: 75%; /* 4:3 ish, taller */
-        }
-
-        .youtube-container.audio-only {
-            padding-bottom: 0;
-            height: 0;
-            margin-bottom: 0;
-        }
-
-        .youtube-container.audio-only iframe {
-            display: none;
-        }
-
-        .atc-options {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .atc-options .tag-btn {
-            flex-shrink: 0;
-        }
-
-        .option-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.65rem;
-            color: #888;
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s ease;
-        }
-
-        .option-toggle:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .option-toggle.active {
-            background: rgba(123, 140, 222, 0.2);
-            border-color: rgba(123, 140, 222, 0.4);
-            color: #7b8cde;
-        }
-
-        .option-toggle input {
-            display: none;
-        }
-
-        .size-selector {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .size-btn {
-            width: 24px;
-            height: 24px;
-            font-size: 0.6rem;
-            padding: 0;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            color: #888;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .size-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .size-btn.active {
-            background: rgba(123, 140, 222, 0.2);
-            border-color: rgba(123, 140, 222, 0.4);
-            color: #7b8cde;
-        }
-
-        .fullscreen-btn {
-            width: 28px;
-            height: 28px;
-        }
-
         .atc-disabled-message {
             text-align: center;
             color: #666;
@@ -826,26 +728,13 @@
                 <span class="channel-title">Live ATC</span>
                 <span class="channel-status" id="atc-status">Ready</span>
             </div>
-            <div class="atc-options">
+            <div class="tag-row">
                 <button class="tag-btn" id="atc-source-btn" title="Change ATC source">
                     <span id="current-atc-source">Select source</span>
                     <span>&#9662;</span>
                 </button>
-                <label class="option-toggle" id="audio-only-toggle" title="Audio only (low bandwidth)">
-                    <input type="checkbox" id="audio-only-checkbox">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
-                    Audio Only
-                </label>
-                <div class="size-selector" id="size-selector">
-                    <button class="size-btn" data-size="small" title="Small">S</button>
-                    <button class="size-btn active" data-size="medium" title="Medium">M</button>
-                    <button class="size-btn" data-size="large" title="Large">L</button>
-                </div>
-                <button class="btn-small fullscreen-btn" id="atc-fullscreen" title="Fullscreen">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
-                </button>
             </div>
-            <div class="youtube-container size-medium" id="youtube-container">
+            <div class="youtube-container" id="youtube-container">
                 <div id="atc-player"></div>
             </div>
             <div class="atc-disabled-message" id="atc-disabled-message" style="display: none;">
@@ -978,8 +867,6 @@
         const SELECTED_TAG_KEY = 'ambientRadioSelectedTag';
         const SELECTED_SOURCE_KEY = 'ambientSpaceSource';
         const SELECTED_ATC_SOURCE_KEY = 'ambientAtcSource';
-        const ATC_AUDIO_ONLY_KEY = 'ambientAtcAudioOnly';
-        const ATC_SIZE_KEY = 'ambientAtcSize';
         const BASE_TTL = 6 * 60 * 60 * 1000; // 6 hours
         const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
         const TAGS_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 day
@@ -1000,8 +887,6 @@
         let currentTag = localStorage.getItem(SELECTED_TAG_KEY) || 'ambient';
         let currentSource = localStorage.getItem(SELECTED_SOURCE_KEY) || 'apollo11.json';
         let currentAtcSource = localStorage.getItem(SELECTED_ATC_SOURCE_KEY) || null;
-        let atcAudioOnly = localStorage.getItem(ATC_AUDIO_ONLY_KEY) === 'true';
-        let atcSize = localStorage.getItem(ATC_SIZE_KEY) || 'medium';
         let radioStopping = false;
         let spaceStopping = false;
         let masterMuted = false;
@@ -1051,10 +936,6 @@
         const youtubeContainer = document.getElementById('youtube-container');
         const atcDisabledMessage = document.getElementById('atc-disabled-message');
         const atcControls = document.getElementById('atc-controls');
-        const audioOnlyToggle = document.getElementById('audio-only-toggle');
-        const audioOnlyCheckbox = document.getElementById('audio-only-checkbox');
-        const sizeSelector = document.getElementById('size-selector');
-        const atcFullscreenBtn = document.getElementById('atc-fullscreen');
 
         const masterVolumeSlider = document.getElementById('master-volume');
         const masterVolumeValue = document.getElementById('master-volume-value');
@@ -1844,9 +1725,6 @@
                 if (!response.ok) throw new Error('Failed to load ATC sources');
                 allAtcSources = await response.json();
 
-                // Initialize UI based on saved state
-                initAtcUI();
-
                 // If we have a saved source, load it
                 if (currentAtcSource && allAtcSources.some(s => s.id === currentAtcSource)) {
                     const source = allAtcSources.find(s => s.id === currentAtcSource);
@@ -1860,22 +1738,6 @@
                 console.error('Error loading ATC sources:', error);
                 currentAtcSourceSpan.textContent = 'Error loading';
             }
-        }
-
-        function initAtcUI() {
-            // Set audio-only state
-            if (atcAudioOnly) {
-                audioOnlyToggle.classList.add('active');
-                audioOnlyCheckbox.checked = true;
-                youtubeContainer.classList.add('audio-only');
-            }
-
-            // Set size state
-            youtubeContainer.className = youtubeContainer.className.replace(/size-\w+/g, '');
-            youtubeContainer.classList.add(`size-${atcSize}`);
-            sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.size === atcSize);
-            });
         }
 
         function showAtcDisabled() {
@@ -2009,42 +1871,6 @@
             }
 
             closeAtcSourceModal();
-        }
-
-        function toggleAtcAudioOnly() {
-            atcAudioOnly = !atcAudioOnly;
-            localStorage.setItem(ATC_AUDIO_ONLY_KEY, atcAudioOnly);
-
-            audioOnlyToggle.classList.toggle('active', atcAudioOnly);
-            audioOnlyCheckbox.checked = atcAudioOnly;
-            youtubeContainer.classList.toggle('audio-only', atcAudioOnly);
-        }
-
-        function setAtcSize(size) {
-            atcSize = size;
-            localStorage.setItem(ATC_SIZE_KEY, size);
-
-            youtubeContainer.className = youtubeContainer.className.replace(/size-\w+/g, '');
-            youtubeContainer.classList.add(`size-${size}`);
-
-            sizeSelector.querySelectorAll('.size-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.size === size);
-            });
-        }
-
-        function toggleAtcFullscreen() {
-            if (!youtubeContainer || atcAudioOnly) return;
-
-            const iframe = youtubeContainer.querySelector('iframe');
-            if (!iframe) return;
-
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else if (iframe.requestFullscreen) {
-                iframe.requestFullscreen();
-            } else if (iframe.webkitRequestFullscreen) {
-                iframe.webkitRequestFullscreen();
-            }
         }
 
         function renderAtcSources() {
@@ -2249,17 +2075,6 @@
                 selectAtcSource(sourceId === 'none' ? null : sourceId);
             }
         });
-
-        audioOnlyToggle.addEventListener('click', toggleAtcAudioOnly);
-
-        sizeSelector.addEventListener('click', (e) => {
-            const btn = e.target.closest('.size-btn');
-            if (btn) {
-                setAtcSize(btn.dataset.size);
-            }
-        });
-
-        atcFullscreenBtn.addEventListener('click', toggleAtcFullscreen);
 
         spaceProgressBar.addEventListener('click', (e) => {
             if (spaceAudio && spaceAudio.duration) {
