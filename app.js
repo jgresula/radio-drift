@@ -724,7 +724,7 @@
 
             newAudio.src = station.url_resolved;
             newAudio.play().catch(err => {
-                if (radioAudio !== newAudio) return;
+                if (radioAudio !== newAudio || radioStopping) return;
                 console.error('Play failed:', err);
                 blacklistStation(BLACKLIST_KEY, currentStation.stationuuid, updateTagDisplay);
                 autoRetryNextStation();
@@ -1420,7 +1420,7 @@
 
             newAudio.src = station.url_resolved;
             newAudio.play().catch(err => {
-                if (curatedAudio !== newAudio) return;
+                if (curatedAudio !== newAudio || curatedStopping) return;
                 console.error('Curated play failed:', err);
                 blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
                 curatedStatus.textContent = 'Unavailable';
@@ -1493,7 +1493,7 @@
 
             newAudio.src = station.url_resolved;
             newAudio.play().catch(err => {
-                if (curatedAudio !== newAudio) return;
+                if (curatedAudio !== newAudio || curatedStopping) return;
                 console.error('Curated play failed (auto-retry):', err);
                 blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
                 playCuratedNext();
@@ -2033,3 +2033,10 @@
         loadAtcSources();
         loadYouTubeAPI();
         loadCuratedStations();
+
+        // Prevent blacklisting on page unload
+        window.addEventListener('beforeunload', () => {
+            radioStopping = true;
+            spaceStopping = true;
+            curatedStopping = true;
+        });
