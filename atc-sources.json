@@ -4,12 +4,8 @@
         "name": "ATL - Atlanta Flightradar24 with ATC"
     },
     {
-        "id": "-c8Mfiu5wzI",
-        "name": "DUB - Dublin Airport Live ATC & Tracking"
-    },
-    {
-        "id": "ygC5wni2DMQ",
-        "name": "HKG - Hong Kong Int'l Airport ATC"
+        "id": "IfP3WzymBuI",
+        "name": "DFW - Dallas/Fort Worth East Tower"
     },
     {
         "id": "RQmWYMSV-pk",
@@ -58,6 +54,22 @@
     {
         "id": "vbcbIow1tP8",
         "name": "SFO - San Francisco Tracking & Tower ATC"
+    },
+    {
+        "id": "84_U7vOtfbE",
+        "name": "STL - St. Louis Lambert International"
+    },
+    {
+        "id": "0jUGiYZKAMg",
+        "name": "PRG - Prague Vaclav Havel 24/7"
+    },
+    {
+        "id": "ygC5wni2DMQ",
+        "name": "HKG - Hong Kong Int'l Airport ATC"
+    },
+    {
+        "id": "wnDSkDnLRZg",
+        "name": "PER - Perth Jandakot YPJT"
     },
     {
         "id": "NOZVUBsCDEI",
