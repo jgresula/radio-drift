@@ -49,7 +49,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .channel-title {
@@ -78,20 +78,91 @@
             color: #f44336;
         }
 
+        .tag-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag-btn {
+            background: rgba(123, 140, 222, 0.15);
+            border: 1px solid rgba(123, 140, 222, 0.3);
+            color: #7b8cde;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            height: auto;
+            width: auto;
+        }
+
+        .tag-btn:hover {
+            background: rgba(123, 140, 222, 0.25);
+        }
+
+        .now-playing-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
         .now-playing {
+            flex: 1;
             font-size: 0.9rem;
             color: #ccc;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             min-height: 1.4em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
+        .now-playing-row .now-playing {
+            margin-bottom: 0;
+        }
+
+        .now-playing-actions {
+            display: flex;
+            gap: 0.25rem;
+            flex-shrink: 0;
+            align-items: center;
+        }
+
+        .now-playing-actions button {
+            width: 28px;
+            height: 28px;
+            color: #888;
+        }
+
+        .now-playing-actions button:hover {
+            color: #e0e0e0;
+        }
+
+        .now-playing-actions button.active {
+            color: #e91e63;
+        }
+
+        .now-playing-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 1rem;
+            min-height: 1.2em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-style: italic;
+        }
+
         .controls {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
@@ -122,6 +193,12 @@
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .btn-small {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
         }
 
         .volume-container {
@@ -172,12 +249,27 @@
             text-align: right;
         }
 
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         .shuffle-btn {
-            width: 100%;
+            flex: 1;
             height: 36px;
             font-size: 0.75rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .favorites-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 0.85rem;
         }
 
         .loading {
@@ -187,6 +279,59 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-bar:hover {
+            height: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #7b8cde;
+            width: 0%;
+            transition: width 0.2s linear;
+        }
+
+        .progress-time {
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .master-volume {
+            background: rgba(123, 140, 222, 0.1);
+            border: 1px solid rgba(123, 140, 222, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .master-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #7b8cde;
         }
 
         .footer {
@@ -200,6 +345,296 @@
             color: #7b8cde;
             text-decoration: none;
         }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #7b8cde;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            font-size: 1.2rem;
+            background: transparent;
+            border: none;
+            color: #888;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button {
+            width: auto;
+            height: 32px;
+            padding: 0 1rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Search input */
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: rgba(123, 140, 222, 0.5);
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        /* Tag list */
+        .tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .tag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .tag-item:hover {
+            background: rgba(123, 140, 222, 0.1);
+            border-color: rgba(123, 140, 222, 0.3);
+        }
+
+        .tag-item.selected {
+            background: rgba(123, 140, 222, 0.2);
+            border-color: rgba(123, 140, 222, 0.4);
+        }
+
+        .tag-name {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .tag-count {
+            font-size: 0.7rem;
+            color: #666;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* Favorites list */
+        .favorites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .favorite-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .favorite-name {
+            font-size: 0.8rem;
+            color: #ccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .favorite-tag {
+            font-size: 0.65rem;
+            color: #666;
+        }
+
+        .favorite-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .favorite-actions button {
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #666;
+            font-size: 0.8rem;
+            padding: 2rem;
+        }
+
+        /* Station info content */
+        .station-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .station-info-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .station-favicon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            object-fit: contain;
+        }
+
+        .station-info-name {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .station-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+        }
+
+        .station-info-label {
+            color: #888;
+        }
+
+        .station-info-value {
+            color: #ccc;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .station-info-value a {
+            color: #7b8cde;
+            text-decoration: none;
+        }
+
+        .station-info-value a:hover {
+            text-decoration: underline;
+        }
+
+        .station-info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            justify-content: flex-end;
+        }
+
+        .station-info-tag {
+            background: rgba(123, 140, 222, 0.15);
+            color: #7b8cde;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .station-info-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .station-info-actions button {
+            flex: 1;
+            height: 36px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .station-info-actions button svg {
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -212,17 +647,32 @@
                 <span class="channel-title">Ambient Radio</span>
                 <span class="channel-status" id="radio-status">Stopped</span>
             </div>
-            <div class="now-playing" id="radio-now-playing">Click play to start</div>
+            <div class="tag-row">
+                <button class="tag-btn" id="tag-btn" title="Change genre">
+                    <span id="current-tag">ambient</span>
+                    <span>&#9662;</span>
+                </button>
+            </div>
+            <div class="now-playing-row">
+                <div class="now-playing" id="radio-now-playing">Click play to start</div>
+                <div class="now-playing-actions">
+                    <button id="radio-favorite" title="Add to favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                    <button id="radio-info" title="Station info"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+                </div>
+            </div>
+            <div class="now-playing-meta" id="radio-meta"></div>
             <div class="controls">
-                <button id="radio-play" title="Play">&#9654;</button>
-                <button id="radio-stop" title="Stop">&#9632;</button>
+                <button id="radio-toggle" title="Play/Pause">&#9654;</button>
+                <button id="radio-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
-                    <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
                     <span class="volume-value" id="radio-volume-value">70%</span>
                 </div>
             </div>
-            <button class="shuffle-btn" id="radio-shuffle">&#128256; Random Station</button>
+            <div class="button-row">
+                <button class="shuffle-btn" id="radio-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
+                <button class="favorites-btn" id="open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+            </div>
         </div>
 
         <!-- Space Comms Channel -->
@@ -231,76 +681,614 @@
                 <span class="channel-title">Space Comms</span>
                 <span class="channel-status" id="space-status">Stopped</span>
             </div>
-            <div class="now-playing" id="space-now-playing">Apollo 11 Mission Audio</div>
+            <div class="tag-row">
+                <button class="tag-btn" id="source-btn" title="Change source">
+                    <span id="current-source">Apollo 11</span>
+                    <span>&#9662;</span>
+                </button>
+            </div>
+            <div class="now-playing" id="space-now-playing">Loading clips...</div>
+            <div class="progress-container" id="space-progress" style="display: none;">
+                <span class="progress-time" id="space-current">0:00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="space-progress-fill"></div>
+                </div>
+                <span class="progress-time" id="space-duration">0:00:00</span>
+            </div>
             <div class="controls">
-                <button id="space-play" title="Play">&#9654;</button>
-                <button id="space-stop" title="Stop">&#9632;</button>
+                <button id="space-toggle" title="Play/Pause">&#9654;</button>
+                <button id="space-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                 <div class="volume-container">
-                    <span style="font-size: 0.8rem;">&#128264;</span>
                     <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="40">
                     <span class="volume-value" id="space-volume-value">40%</span>
                 </div>
             </div>
-            <button class="shuffle-btn" id="space-shuffle">&#128256; Random Clip</button>
+            <div class="button-row">
+                <button class="shuffle-btn" id="space-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Clip</button>
+            </div>
+        </div>
+
+        <!-- Master Volume -->
+        <div class="master-volume">
+            <span class="master-label">Master</span>
+            <button id="master-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
+            <div class="volume-container" style="flex: 1;">
+                <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
+                <span class="volume-value" id="master-volume-value">100%</span>
+            </div>
         </div>
 
         <div class="footer">
-            Radio stations via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
-            Space audio: NASA (Public Domain)
+            Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
+            Space audio: <a href="https://archive.org/" target="_blank">Archive.org</a> (NASA/Public Domain)
+        </div>
+    </div>
+
+    <!-- Tag Selection Modal -->
+    <div class="modal-overlay" id="tag-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Select Genre</span>
+                <button class="modal-close" id="tag-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="search-input" id="tag-search" placeholder="Search tags...">
+                <div class="tag-list" id="tag-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal-overlay" id="favorites-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Favorite Stations</span>
+                <button class="modal-close" id="favorites-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="favorites-list" id="favorites-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="import-favorites">Import</button>
+                <button id="export-favorites">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Source Selection Modal -->
+    <div class="modal-overlay" id="source-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Select Audio Source</span>
+                <button class="modal-close" id="source-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tag-list" id="source-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Station Info Modal -->
+    <div class="modal-overlay" id="station-info-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Station Info</span>
+                <button class="modal-close" id="station-info-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="station-info-content"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // NASA/Space audio (public domain)
-        const spaceAudioClips = [
-            {
-                name: 'STS-135 Landing Commander Comments',
-                url: 'https://www.nasa.gov/wp-content/uploads/2015/01/590196main_ringtone_135_landingCommanderComments.mp3'
-            }
-        ];
+        // ============== Constants ==============
+        const BLACKLIST_KEY = 'ambientRadioBlacklist';
+        const FAVORITES_KEY = 'ambientRadioFavorites';
+        const TAGS_CACHE_KEY = 'ambientRadioTags';
+        const SELECTED_TAG_KEY = 'ambientRadioSelectedTag';
+        const SELECTED_SOURCE_KEY = 'ambientSpaceSource';
+        const BASE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+        const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+        const TAGS_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 day
+        const MAX_RETRY_ATTEMPTS = 10;
 
-        // State
+        // ============== State ==============
+        let spaceAudioClips = [];
         let radioAudio = null;
         let spaceAudio = null;
         let currentStation = null;
         let currentSpaceClip = 0;
         let stations = [];
+        let shuffledPlaylist = [];
+        let playlistIndex = 0;
+        let allTags = [];
+        let allSources = [];
+        let currentTag = localStorage.getItem(SELECTED_TAG_KEY) || 'ambient';
+        let currentSource = localStorage.getItem(SELECTED_SOURCE_KEY) || 'apollo11.json';
+        let radioStopping = false;
+        let spaceStopping = false;
+        let masterMuted = false;
+        let radioMuted = false;
+        let spaceMuted = false;
+        let masterVolume = 1;
+        let retryCount = 0;
 
-        // DOM Elements
-        const radioPlayBtn = document.getElementById('radio-play');
-        const radioStopBtn = document.getElementById('radio-stop');
+        // ============== DOM Elements ==============
+        const radioToggleBtn = document.getElementById('radio-toggle');
         const radioShuffleBtn = document.getElementById('radio-shuffle');
         const radioVolumeSlider = document.getElementById('radio-volume');
         const radioVolumeValue = document.getElementById('radio-volume-value');
         const radioStatus = document.getElementById('radio-status');
         const radioNowPlaying = document.getElementById('radio-now-playing');
+        const radioMeta = document.getElementById('radio-meta');
+        const radioFavoriteBtn = document.getElementById('radio-favorite');
+        const radioInfoBtn = document.getElementById('radio-info');
+        const tagBtn = document.getElementById('tag-btn');
+        const currentTagSpan = document.getElementById('current-tag');
 
-        const spacePlayBtn = document.getElementById('space-play');
-        const spaceStopBtn = document.getElementById('space-stop');
+        const spaceToggleBtn = document.getElementById('space-toggle');
         const spaceShuffleBtn = document.getElementById('space-shuffle');
         const spaceVolumeSlider = document.getElementById('space-volume');
         const spaceVolumeValue = document.getElementById('space-volume-value');
         const spaceStatus = document.getElementById('space-status');
         const spaceNowPlaying = document.getElementById('space-now-playing');
+        const spaceProgress = document.getElementById('space-progress');
+        const spaceProgressBar = document.querySelector('#space-progress .progress-bar');
+        const spaceProgressFill = document.getElementById('space-progress-fill');
+        const spaceCurrent = document.getElementById('space-current');
+        const spaceDuration = document.getElementById('space-duration');
 
-        // Radio Browser API - fetch ambient stations
-        async function fetchAmbientStations() {
-            radioStatus.textContent = 'Loading...';
-            radioStatus.className = 'channel-status loading';
+        const masterVolumeSlider = document.getElementById('master-volume');
+        const masterVolumeValue = document.getElementById('master-volume-value');
+        const masterMuteBtn = document.getElementById('master-mute');
+        const radioMuteBtn = document.getElementById('radio-mute');
+        const spaceMuteBtn = document.getElementById('space-mute');
+
+        const tagModal = document.getElementById('tag-modal');
+        const tagModalClose = document.getElementById('tag-modal-close');
+        const tagSearch = document.getElementById('tag-search');
+        const tagList = document.getElementById('tag-list');
+
+        const favoritesModal = document.getElementById('favorites-modal');
+        const favoritesModalClose = document.getElementById('favorites-modal-close');
+        const favoritesList = document.getElementById('favorites-list');
+        const openFavoritesBtn = document.getElementById('open-favorites');
+        const importFavoritesBtn = document.getElementById('import-favorites');
+        const exportFavoritesBtn = document.getElementById('export-favorites');
+
+        const sourceBtn = document.getElementById('source-btn');
+        const currentSourceSpan = document.getElementById('current-source');
+        const sourceModal = document.getElementById('source-modal');
+        const sourceModalClose = document.getElementById('source-modal-close');
+        const sourceList = document.getElementById('source-list');
+
+        const stationInfoModal = document.getElementById('station-info-modal');
+        const stationInfoClose = document.getElementById('station-info-close');
+        const stationInfoContent = document.getElementById('station-info-content');
+
+        // ============== SVG Icons ==============
+        const speakerOnSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
+        const speakerOffSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+        const infoSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+        const heartOutlineSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+        const heartFilledSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+        const shuffleSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>';
+
+        // ============== Utility Functions ==============
+        function formatDuration(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function createShuffledPlaylist() {
+            const indexes = stations.map((_, i) => i);
+            shuffledPlaylist = shuffleArray(indexes);
+            playlistIndex = 0;
+        }
+
+        // ============== Blacklist Functions ==============
+        function getBlacklist() {
+            try {
+                return JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '{}');
+            } catch { return {}; }
+        }
+
+        function saveBlacklist(blacklist) {
+            localStorage.setItem(BLACKLIST_KEY, JSON.stringify(blacklist));
+        }
+
+        function isStationBlacklisted(stationId) {
+            const blacklist = getBlacklist();
+            const entry = blacklist[stationId];
+            if (!entry) return false;
+            if (Date.now() >= entry.until) {
+                delete blacklist[stationId];
+                saveBlacklist(blacklist);
+                return false;
+            }
+            return true;
+        }
+
+        function blacklistStation(stationId) {
+            const blacklist = getBlacklist();
+            const entry = blacklist[stationId] || { fails: 0 };
+            entry.fails++;
+            const ttl = Math.min(BASE_TTL * Math.pow(2, entry.fails - 1), MAX_TTL);
+            entry.until = Date.now() + ttl;
+            blacklist[stationId] = entry;
+            saveBlacklist(blacklist);
+            console.log(`Station ${stationId} blacklisted for ${Math.round(ttl / 3600000)}h (fail #${entry.fails})`);
+            updateTagDisplay();
+        }
+
+        function getAvailableStations() {
+            return stations.filter(s => !isStationBlacklisted(s.stationuuid));
+        }
+
+        function getAvailableStationCount() {
+            return getAvailableStations().length;
+        }
+
+        function updateTagDisplay() {
+            const count = getAvailableStationCount();
+            currentTagSpan.textContent = count > 0 ? `${currentTag} · ${count}` : currentTag;
+        }
+
+        function updateSourceDisplay() {
+            const source = allSources.find(s => s.json === currentSource);
+            const name = source ? source.name : 'Unknown';
+            const count = spaceAudioClips.length;
+            currentSourceSpan.textContent = count > 0 ? `${name} · ${count} clips` : name;
+        }
+
+        // ============== Favorites Functions ==============
+        function getFavorites() {
+            try {
+                return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+            } catch { return []; }
+        }
+
+        function saveFavorites(favorites) {
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        }
+
+        function isStationFavorite(stationId) {
+            return getFavorites().some(f => f.stationuuid === stationId);
+        }
+
+        function toggleFavorite() {
+            if (!currentStation) return;
+            const favorites = getFavorites();
+            const index = favorites.findIndex(f => f.stationuuid === currentStation.stationuuid);
+            if (index >= 0) {
+                favorites.splice(index, 1);
+                radioFavoriteBtn.innerHTML = heartOutlineSvg;
+                radioFavoriteBtn.classList.remove('active');
+            } else {
+                favorites.push({
+                    stationuuid: currentStation.stationuuid,
+                    name: currentStation.name,
+                    url_resolved: currentStation.url_resolved,
+                    tags: currentStation.tags
+                });
+                radioFavoriteBtn.innerHTML = heartFilledSvg;
+                radioFavoriteBtn.classList.add('active');
+            }
+            saveFavorites(favorites);
+        }
+
+        function updateFavoriteButton() {
+            if (currentStation && isStationFavorite(currentStation.stationuuid)) {
+                radioFavoriteBtn.innerHTML = heartFilledSvg;
+                radioFavoriteBtn.classList.add('active');
+            } else {
+                radioFavoriteBtn.innerHTML = heartOutlineSvg;
+                radioFavoriteBtn.classList.remove('active');
+            }
+        }
+
+        function renderFavorites() {
+            const favorites = getFavorites();
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<div class="empty-message">No favorites yet</div>';
+                return;
+            }
+            favoritesList.innerHTML = favorites.map((fav, i) => `
+                <div class="favorite-item">
+                    <div class="favorite-info">
+                        <div class="favorite-name">${fav.name}</div>
+                        <div class="favorite-tag">${fav.tags || ''}</div>
+                    </div>
+                    <div class="favorite-actions">
+                        <button onclick="playFavorite(${i})" title="Play">&#9654;</button>
+                        <button onclick="removeFavorite(${i})" title="Remove">&#10005;</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playFavorite(index) {
+            const favorites = getFavorites();
+            const fav = favorites[index];
+            if (!fav) return;
+            currentStation = fav;
+            playStation(fav);
+            closeFavoritesModal();
+        }
+
+        function removeFavorite(index) {
+            const favorites = getFavorites();
+            favorites.splice(index, 1);
+            saveFavorites(favorites);
+            renderFavorites();
+            updateFavoriteButton();
+        }
+
+        function exportFavorites() {
+            const favorites = getFavorites();
+            const blob = new Blob([JSON.stringify(favorites, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ambient-radio-favorites.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importFavorites() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    const text = await file.text();
+                    const imported = JSON.parse(text);
+                    if (Array.isArray(imported)) {
+                        const existing = getFavorites();
+                        const merged = [...existing];
+                        imported.forEach(imp => {
+                            if (!merged.some(m => m.stationuuid === imp.stationuuid)) {
+                                merged.push(imp);
+                            }
+                        });
+                        saveFavorites(merged);
+                        renderFavorites();
+                        updateFavoriteButton();
+                    }
+                } catch (err) {
+                    console.error('Import failed:', err);
+                }
+            };
+            input.click();
+        }
+
+        // ============== Tags Functions ==============
+        function getCachedTags() {
+            try {
+                const cached = JSON.parse(localStorage.getItem(TAGS_CACHE_KEY));
+                if (cached && Date.now() < cached.expires) {
+                    return cached.tags;
+                }
+            } catch {}
+            return null;
+        }
+
+        function cacheTags(tags) {
+            localStorage.setItem(TAGS_CACHE_KEY, JSON.stringify({
+                tags,
+                expires: Date.now() + TAGS_CACHE_TTL
+            }));
+        }
+
+        async function fetchTags() {
+            const cached = getCachedTags();
+            if (cached) {
+                allTags = cached;
+                return;
+            }
+            try {
+                const response = await radioBrowserFetch('/json/tags?limit=2000&order=stationcount&reverse=true');
+                allTags = await response.json();
+                allTags = allTags.filter(t => t.stationcount > 5);
+                cacheTags(allTags);
+            } catch (err) {
+                console.error('Error fetching tags:', err);
+            }
+        }
+
+        function renderTags(filter = '') {
+            const filtered = allTags.filter(t =>
+                t.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            tagList.innerHTML = filtered.slice(0, 100).map(tag => `
+                <div class="tag-item ${tag.name === currentTag ? 'selected' : ''}" data-tag="${tag.name}">
+                    <span class="tag-name">${tag.name}</span>
+                    <span class="tag-count">${tag.stationcount}</span>
+                </div>
+            `).join('');
+        }
+
+        async function selectTag(tagName) {
+            const wasPlaying = radioAudio && !radioAudio.paused;
+
+            currentTag = tagName;
+            localStorage.setItem(SELECTED_TAG_KEY, tagName);
+            currentTagSpan.textContent = tagName;
+            closeTagModal();
+            await fetchStationsByTag(tagName);
+
+            // Auto-play if was playing before
+            if (wasPlaying) {
+                playRandomStation();
+            }
+        }
+
+        // ============== Volume Functions ==============
+        function updateVolumes() {
+            const effectiveMaster = masterMuted ? 0 : masterVolume;
+            if (radioAudio) {
+                const radioVol = radioMuted ? 0 : (radioVolumeSlider.value / 100);
+                radioAudio.volume = radioVol * effectiveMaster;
+            }
+            if (spaceAudio) {
+                const spaceVol = spaceMuted ? 0 : (spaceVolumeSlider.value / 100);
+                spaceAudio.volume = spaceVol * effectiveMaster;
+            }
+        }
+
+        // ============== Radio Browser Server Selection ==============
+        //
+        // Strategy for finding a working Radio Browser API server:
+        //
+        // 1. Try LAST WORKING SERVER first (from localStorage)
+        //    - Fastest path for returning users
+        //    - Most likely to still work
+        //
+        // 2. Try OTHER CACHED SERVERS (from localStorage, shuffled)
+        //    - Server list cached with 24h TTL
+        //    - Shuffled to distribute load across servers
+        //
+        // 3. FETCH FRESH SERVER LIST (if cache expired/empty)
+        //    - From https://all.api.radio-browser.info/json/servers
+        //    - Updates the cache on success
+        //
+        // 4. HARDCODED FALLBACK SERVERS (last resort)
+        //    - Used when server list endpoint is down
+        //    - Guarantees we always have servers to try
+        //
+        // On successful request: save server as "last working" for next time
+        //
+        const RADIO_BROWSER_LAST_SERVER_KEY = 'radioBrowserLastServer';
+        const RADIO_BROWSER_SERVERS_KEY = 'radioBrowserServers';
+        const RADIO_BROWSER_SERVERS_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+        const RADIO_BROWSER_FALLBACK_SERVERS = [
+            'https://fi1.api.radio-browser.info',
+            'https://de1.api.radio-browser.info',
+            'https://de2.api.radio-browser.info'
+        ];
+
+        function getLastWorkingServer() {
+            return localStorage.getItem(RADIO_BROWSER_LAST_SERVER_KEY);
+        }
+
+        function saveLastWorkingServer(server) {
+            localStorage.setItem(RADIO_BROWSER_LAST_SERVER_KEY, server);
+        }
+
+        function getCachedServers() {
+            try {
+                const data = JSON.parse(localStorage.getItem(RADIO_BROWSER_SERVERS_KEY));
+                if (!data || !data.servers || !data.timestamp) return null;
+                if (Date.now() - data.timestamp > RADIO_BROWSER_SERVERS_TTL) return null;
+                return data.servers;
+            } catch { return null; }
+        }
+
+        function cacheServers(servers) {
+            localStorage.setItem(RADIO_BROWSER_SERVERS_KEY, JSON.stringify({
+                servers,
+                timestamp: Date.now()
+            }));
+        }
+
+        async function fetchServerList() {
+            const response = await fetch('https://all.api.radio-browser.info/json/servers');
+            if (!response.ok) throw new Error('Failed to fetch server list');
+            const servers = await response.json();
+            if (!servers || servers.length === 0) throw new Error('No servers in list');
+            return servers.map(s => `https://${s.name}`);
+        }
+
+        async function getServersToTry() {
+            const servers = [];
+            const seen = new Set();
+
+            const addServer = (server) => {
+                if (server && !seen.has(server)) {
+                    seen.add(server);
+                    servers.push(server);
+                }
+            };
+
+            const addServers = (list, shuffle = false) => {
+                if (!list) return;
+                const toAdd = shuffle ? [...list].sort(() => Math.random() - 0.5) : list;
+                toAdd.forEach(addServer);
+            };
+
+            // 1. Last working server first
+            addServer(getLastWorkingServer());
+
+            // 2. Other cached servers (shuffled)
+            addServers(getCachedServers(), true);
+
+            // 3. Try to fetch fresh list if we don't have enough servers
+            if (servers.length < 3) {
+                try {
+                    const fresh = await fetchServerList();
+                    cacheServers(fresh);
+                    addServers(fresh, true);
+                } catch (err) {
+                    console.warn('Failed to fetch Radio Browser server list:', err.message);
+                }
+            }
+
+            // 4. Hardcoded fallbacks
+            addServers(RADIO_BROWSER_FALLBACK_SERVERS, true);
+
+            return servers;
+        }
+
+        async function radioBrowserFetch(path) {
+            const servers = await getServersToTry();
+            let lastError;
+
+            for (const server of servers) {
+                try {
+                    const response = await fetch(`${server}${path}`);
+                    if (response.ok) {
+                        saveLastWorkingServer(server);
+                        return response;
+                    }
+                    lastError = new Error(`Server ${server} returned ${response.status}`);
+                    console.warn(`Radio Browser server ${server} failed with ${response.status}, trying next...`);
+                } catch (err) {
+                    lastError = err;
+                    console.warn(`Radio Browser server ${server} error:`, err.message, '- trying next...');
+                }
+            }
+
+            throw lastError || new Error('All Radio Browser servers failed');
+        }
+
+        async function fetchStationsByTag(tag) {
+            const wasPlaying = radioAudio && !radioAudio.paused;
+            const previousStatus = radioStatus.textContent;
+            const previousNowPlaying = radioNowPlaying.textContent;
+
+            if (!wasPlaying) {
+                radioStatus.textContent = 'Loading...';
+                radioStatus.className = 'channel-status loading';
+                radioNowPlaying.textContent = 'Fetching stations...';
+            }
 
             try {
-                // Use multiple server options for reliability
-                const servers = [
-                    'https://de1.api.radio-browser.info',
-                    'https://nl1.api.radio-browser.info',
-                    'https://at1.api.radio-browser.info'
-                ];
-
-                const server = servers[Math.floor(Math.random() * servers.length)];
-                const response = await fetch(`${server}/json/stations/bytagexact/ambient?limit=100&hidebroken=true`);
-
-                if (!response.ok) throw new Error('Failed to fetch stations');
-
+                const response = await radioBrowserFetch(`/json/stations/bytagexact/${encodeURIComponent(tag)}?order=random&hidebroken=true`);
                 stations = await response.json();
                 stations = stations.filter(s => s.url_resolved && s.url_resolved.length > 0);
 
@@ -308,80 +1296,231 @@
                     throw new Error('No stations found');
                 }
 
-                radioStatus.textContent = `${stations.length} stations`;
-                radioStatus.className = 'channel-status';
-                radioNowPlaying.textContent = 'Click play to start';
+                // Create shuffled playlist for sequential random play
+                createShuffledPlaylist();
 
+                // Update tag display with station count
+                updateTagDisplay();
+
+                if (wasPlaying) {
+                    radioStatus.textContent = 'Playing';
+                } else {
+                    radioStatus.textContent = 'Ready';
+                    radioStatus.className = 'channel-status';
+                    radioNowPlaying.textContent = 'Click play to start';
+                }
             } catch (error) {
                 console.error('Error fetching stations:', error);
-                radioStatus.textContent = 'Error';
-                radioStatus.className = 'channel-status error';
-                radioNowPlaying.textContent = 'Failed to load stations';
+                if (!wasPlaying) {
+                    radioStatus.textContent = 'Error';
+                    radioStatus.className = 'channel-status error';
+                    radioNowPlaying.textContent = 'Failed to load stations';
+                }
             }
         }
 
-        // Play random radio station
-        function playRandomStation() {
+        function playStation(station) {
+            if (radioAudio) {
+                radioAudio.pause();
+                radioAudio.src = '';
+            }
+
+            currentStation = station;
+            retryCount = 0;
+            radioNowPlaying.textContent = station.name || 'Unknown Station';
+            radioMeta.textContent = '';
+            radioStatus.textContent = 'Connecting...';
+            radioStatus.className = 'channel-status loading';
+            updateFavoriteButton();
+
+            const newAudio = new Audio();
+            radioAudio = newAudio;
+            radioStopping = false;
+            newAudio.crossOrigin = 'anonymous';
+            updateVolumes();
+
+            newAudio.addEventListener('playing', () => {
+                if (radioAudio !== newAudio) return;
+                radioStatus.textContent = 'Playing';
+                radioStatus.className = 'channel-status playing';
+                radioToggleBtn.innerHTML = '&#10074;&#10074;';
+                retryCount = 0;
+            });
+
+            newAudio.addEventListener('error', (e) => {
+                if (radioAudio !== newAudio || radioStopping) return;
+                console.error('Radio playback error:', e);
+                blacklistStation(currentStation.stationuuid);
+                autoRetryNextStation();
+            });
+
+            newAudio.addEventListener('waiting', () => {
+                if (radioAudio !== newAudio) return;
+                radioStatus.textContent = 'Buffering...';
+                radioStatus.className = 'channel-status loading';
+            });
+
+            // Best-effort metadata from MediaSession
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = null;
+                newAudio.addEventListener('loadedmetadata', () => {
+                    checkMediaSessionMetadata();
+                });
+            }
+
+            newAudio.src = station.url_resolved;
+            newAudio.play().catch(err => {
+                if (radioAudio !== newAudio) return;
+                console.error('Play failed:', err);
+                blacklistStation(currentStation.stationuuid);
+                autoRetryNextStation();
+            });
+        }
+
+        function autoRetryNextStation() {
+            retryCount++;
+            if (retryCount >= MAX_RETRY_ATTEMPTS) {
+                radioStatus.textContent = 'No working stations';
+                radioStatus.className = 'channel-status error';
+                radioNowPlaying.textContent = 'Try another genre';
+                return;
+            }
+
+            const available = getAvailableStations();
+            if (available.length === 0) {
+                radioStatus.textContent = 'No stations available';
+                radioStatus.className = 'channel-status error';
+                radioNowPlaying.textContent = 'All stations blacklisted';
+                return;
+            }
+
+            radioStatus.textContent = 'Trying another...';
+            radioStatus.className = 'channel-status loading';
+
+            setTimeout(() => {
+                playRandomStation();
+            }, 500);
+        }
+
+        function playNextStation() {
             if (stations.length === 0) {
                 radioNowPlaying.textContent = 'No stations available';
                 return;
             }
 
-            // Stop current playback
-            if (radioAudio) {
-                radioAudio.pause();
-                radioAudio.src = '';
+            // Find next non-blacklisted station in shuffled playlist
+            let attempts = 0;
+            while (attempts < stations.length) {
+                const stationIndex = shuffledPlaylist[playlistIndex];
+                const station = stations[stationIndex];
+
+                // Advance playlist index (loop back to start)
+                playlistIndex = (playlistIndex + 1) % shuffledPlaylist.length;
+
+                if (!isStationBlacklisted(station.stationuuid)) {
+                    playStation(station);
+                    return;
+                }
+                attempts++;
             }
 
-            // Pick random station
-            const randomIndex = Math.floor(Math.random() * stations.length);
-            currentStation = stations[randomIndex];
-
-            radioNowPlaying.textContent = currentStation.name || 'Unknown Station';
-            radioStatus.textContent = 'Connecting...';
-            radioStatus.className = 'channel-status loading';
-
-            // Create new audio element
-            radioAudio = new Audio();
-            radioAudio.crossOrigin = 'anonymous';
-            radioAudio.volume = radioVolumeSlider.value / 100;
-
-            radioAudio.addEventListener('playing', () => {
-                radioStatus.textContent = 'Playing';
-                radioStatus.className = 'channel-status playing';
-            });
-
-            radioAudio.addEventListener('error', (e) => {
-                console.error('Radio playback error:', e);
-                radioStatus.textContent = 'Error - Try another';
-                radioStatus.className = 'channel-status error';
-            });
-
-            radioAudio.addEventListener('waiting', () => {
-                radioStatus.textContent = 'Buffering...';
-                radioStatus.className = 'channel-status loading';
-            });
-
-            radioAudio.src = currentStation.url_resolved;
-            radioAudio.play().catch(err => {
-                console.error('Play failed:', err);
-                radioStatus.textContent = 'Error - Try another';
-                radioStatus.className = 'channel-status error';
-            });
+            radioNowPlaying.textContent = 'All stations temporarily unavailable';
         }
 
-        // Stop radio
+        // Alias for backward compatibility
+        function playRandomStation() {
+            playNextStation();
+        }
+
+        function checkMediaSessionMetadata() {
+            // Periodically check for metadata updates
+            const checkMeta = () => {
+                if (!radioAudio || radioAudio.paused) return;
+                if ('mediaSession' in navigator && navigator.mediaSession.metadata) {
+                    const meta = navigator.mediaSession.metadata;
+                    if (meta.title || meta.artist) {
+                        const parts = [];
+                        if (meta.artist) parts.push(meta.artist);
+                        if (meta.title) parts.push(meta.title);
+                        radioMeta.textContent = parts.join(' - ');
+                    }
+                }
+            };
+            setInterval(checkMeta, 5000);
+            checkMeta();
+        }
+
         function stopRadio() {
+            radioStopping = true;
             if (radioAudio) {
                 radioAudio.pause();
-                radioAudio.src = '';
             }
-            radioStatus.textContent = 'Stopped';
+            radioStatus.textContent = 'Paused';
             radioStatus.className = 'channel-status';
+            radioToggleBtn.innerHTML = '&#9654;';
         }
 
-        // Play space audio
+        function toggleRadio() {
+            if (radioAudio && !radioAudio.paused) {
+                stopRadio();
+            } else if (radioAudio && radioAudio.src) {
+                radioStopping = false;
+                radioAudio.play().catch(() => playRandomStation());
+            } else {
+                playRandomStation();
+            }
+        }
+
+        // ============== Space Audio Functions ==============
+        async function loadSources() {
+            try {
+                const response = await fetch('sources.json');
+                if (!response.ok) throw new Error('Failed to load sources');
+                allSources = await response.json();
+
+                // Find and display current source name
+                const source = allSources.find(s => s.json === currentSource) || allSources[0];
+                if (source) {
+                    currentSource = source.json;
+                    currentSourceSpan.textContent = source.name;
+                }
+
+                await loadSpaceClips();
+            } catch (error) {
+                console.error('Error loading sources:', error);
+                // Fallback to loading default apollo11.json
+                await loadSpaceClips();
+            }
+        }
+
+        async function loadSpaceClips() {
+            try {
+                const response = await fetch(currentSource);
+                if (!response.ok) throw new Error('Failed to load clips');
+                const clips = await response.json();
+                spaceAudioClips = clips.map(c => ({
+                    name: c.name,
+                    url: c.url
+                }));
+                updateSourceDisplay();
+                spaceStatus.textContent = 'Ready';
+                spaceNowPlaying.textContent = 'Click play to start';
+                currentSpaceClip = 0;
+            } catch (error) {
+                console.error('Error loading space clips:', error);
+                spaceStatus.textContent = 'Error';
+                spaceStatus.className = 'channel-status error';
+                spaceNowPlaying.textContent = 'Failed to load clips';
+            }
+        }
+
         function playSpaceAudio() {
+            if (spaceAudioClips.length === 0) {
+                spaceNowPlaying.textContent = 'No clips available';
+                return;
+            }
+
+            spaceStopping = false;
             if (spaceAudio) {
                 spaceAudio.pause();
             }
@@ -391,17 +1530,37 @@
             spaceStatus.textContent = 'Loading...';
             spaceStatus.className = 'channel-status loading';
 
+            spaceProgress.style.display = 'flex';
+            spaceProgressFill.style.width = '0%';
+            spaceCurrent.textContent = '0:00:00';
+            spaceDuration.textContent = '0:00:00';
+
             spaceAudio = new Audio();
             spaceAudio.crossOrigin = 'anonymous';
-            spaceAudio.volume = spaceVolumeSlider.value / 100;
-            spaceAudio.loop = true;
+            updateVolumes();
 
             spaceAudio.addEventListener('playing', () => {
                 spaceStatus.textContent = 'Playing';
                 spaceStatus.className = 'channel-status playing';
+                spaceToggleBtn.innerHTML = '&#10074;&#10074;';
+            });
+
+            spaceAudio.addEventListener('timeupdate', () => {
+                if (spaceAudio.duration) {
+                    const percent = (spaceAudio.currentTime / spaceAudio.duration) * 100;
+                    spaceProgressFill.style.width = `${percent}%`;
+                    spaceCurrent.textContent = formatDuration(spaceAudio.currentTime);
+                    spaceDuration.textContent = formatDuration(spaceAudio.duration);
+                }
+            });
+
+            spaceAudio.addEventListener('ended', () => {
+                currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
+                playSpaceAudio();
             });
 
             spaceAudio.addEventListener('error', (e) => {
+                if (spaceStopping) return;
                 console.error('Space audio error:', e);
                 spaceStatus.textContent = 'Error';
                 spaceStatus.className = 'channel-status error';
@@ -415,52 +1574,284 @@
             });
         }
 
-        // Stop space audio
+        function pauseSpaceAudio() {
+            spaceStopping = true;
+            if (spaceAudio) {
+                spaceAudio.pause();
+            }
+            spaceStatus.textContent = 'Paused';
+            spaceStatus.className = 'channel-status';
+            spaceToggleBtn.innerHTML = '&#9654;';
+        }
+
         function stopSpaceAudio() {
+            spaceStopping = true;
             if (spaceAudio) {
                 spaceAudio.pause();
                 spaceAudio.currentTime = 0;
             }
             spaceStatus.textContent = 'Stopped';
             spaceStatus.className = 'channel-status';
+            spaceToggleBtn.innerHTML = '&#9654;';
+            spaceProgress.style.display = 'none';
+            spaceProgressFill.style.width = '0%';
         }
 
-        // Shuffle space clip
-        function shuffleSpaceClip() {
-            currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
-            const wasPlaying = spaceAudio && !spaceAudio.paused;
-            if (wasPlaying) {
-                playSpaceAudio();
+        function toggleSpace() {
+            if (spaceAudio && !spaceAudio.paused) {
+                pauseSpaceAudio();
+            } else if (spaceAudio && spaceAudio.src) {
+                spaceStopping = false;
+                spaceProgress.style.display = 'flex';
+                spaceAudio.play().catch(() => playSpaceAudio());
             } else {
-                spaceNowPlaying.textContent = spaceAudioClips[currentSpaceClip].name;
+                playSpaceAudio();
             }
         }
 
-        // Event Listeners
-        radioPlayBtn.addEventListener('click', playRandomStation);
-        radioStopBtn.addEventListener('click', stopRadio);
-        radioShuffleBtn.addEventListener('click', playRandomStation);
-        radioVolumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            radioVolumeValue.textContent = `${value}%`;
-            if (radioAudio) {
-                radioAudio.volume = value / 100;
+        function shuffleSpaceClip() {
+            if (spaceAudioClips.length === 0) return;
+            currentSpaceClip = Math.floor(Math.random() * spaceAudioClips.length);
+            playSpaceAudio();
+        }
+
+        // ============== Modal Functions ==============
+        function openTagModal() {
+            tagModal.classList.add('active');
+            tagSearch.value = '';
+            renderTags();
+            tagSearch.focus();
+        }
+
+        function closeTagModal() {
+            tagModal.classList.remove('active');
+        }
+
+        function openFavoritesModal() {
+            favoritesModal.classList.add('active');
+            renderFavorites();
+        }
+
+        function closeFavoritesModal() {
+            favoritesModal.classList.remove('active');
+        }
+
+        // Source modal functions
+        function openSourceModal() {
+            sourceModal.classList.add('active');
+            renderSources();
+        }
+
+        function closeSourceModal() {
+            sourceModal.classList.remove('active');
+        }
+
+        // Station info modal functions
+        function openStationInfoModal() {
+            if (!currentStation) return;
+            stationInfoModal.classList.add('active');
+            renderStationInfo();
+        }
+
+        function closeStationInfoModal() {
+            stationInfoModal.classList.remove('active');
+        }
+
+        function renderStationInfo() {
+            if (!currentStation) return;
+
+            const station = currentStation;
+            const isFav = isStationFavorite(station.stationuuid);
+            const tags = station.tags ? station.tags.split(',').filter(t => t.trim()).slice(0, 5) : [];
+
+            stationInfoContent.innerHTML = `
+                <div class="station-info">
+                    <div class="station-info-header">
+                        ${station.favicon ? `<img src="${station.favicon}" class="station-favicon" onerror="this.style.display='none'">` : ''}
+                        <div class="station-info-name">${station.name || 'Unknown Station'}</div>
+                    </div>
+                    ${station.homepage ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Homepage</span>
+                        <span class="station-info-value"><a href="${station.homepage}" target="_blank">${new URL(station.homepage).hostname}</a></span>
+                    </div>` : ''}
+                    ${station.countrycode ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Country</span>
+                        <span class="station-info-value">${station.countrycode}</span>
+                    </div>` : ''}
+                    ${station.codec ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Codec</span>
+                        <span class="station-info-value">${station.codec}${station.bitrate ? ` @ ${station.bitrate} kbps` : ''}</span>
+                    </div>` : ''}
+                    ${tags.length > 0 ? `
+                    <div class="station-info-row">
+                        <span class="station-info-label">Tags</span>
+                        <span class="station-info-value">
+                            <div class="station-info-tags">
+                                ${tags.map(t => `<span class="station-info-tag">${t.trim()}</span>`).join('')}
+                            </div>
+                        </span>
+                    </div>` : ''}
+                    <div class="station-info-row">
+                        <span class="station-info-label">Radio Browser</span>
+                        <span class="station-info-value"><a href="https://www.radio-browser.info/history/${station.stationuuid}" target="_blank">View history</a></span>
+                    </div>
+                    <div class="station-info-actions">
+                        <button onclick="toggleFavoriteFromInfo()">${isFav ? heartFilledSvg + ' Unfavorite' : heartOutlineSvg + ' Favorite'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFavoriteFromInfo() {
+            toggleFavorite();
+            renderStationInfo();
+        }
+
+        function renderSources() {
+            sourceList.innerHTML = allSources.map(source => `
+                <div class="tag-item ${source.json === currentSource ? 'selected' : ''}" data-source="${source.json}">
+                    <span class="tag-name">${source.name}</span>
+                </div>
+            `).join('');
+        }
+
+        async function selectSource(sourceJson) {
+            const source = allSources.find(s => s.json === sourceJson);
+            if (!source) return;
+
+            const wasPlaying = spaceAudio && !spaceAudio.paused;
+
+            currentSource = sourceJson;
+            localStorage.setItem(SELECTED_SOURCE_KEY, sourceJson);
+            currentSourceSpan.textContent = source.name;
+            closeSourceModal();
+
+            // Stop current playback and load new clips
+            if (wasPlaying) {
+                stopSpaceAudio();
             }
+            await loadSpaceClips();
+
+            // Auto-play if was playing before
+            if (wasPlaying) {
+                shuffleSpaceClip();
+            }
+        }
+
+        // ============== Event Listeners ==============
+        radioToggleBtn.addEventListener('click', toggleRadio);
+        radioShuffleBtn.addEventListener('click', playRandomStation);
+        radioFavoriteBtn.addEventListener('click', toggleFavorite);
+        radioVolumeSlider.addEventListener('input', (e) => {
+            radioVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
         });
 
-        spacePlayBtn.addEventListener('click', playSpaceAudio);
-        spaceStopBtn.addEventListener('click', stopSpaceAudio);
+        spaceToggleBtn.addEventListener('click', toggleSpace);
         spaceShuffleBtn.addEventListener('click', shuffleSpaceClip);
         spaceVolumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            spaceVolumeValue.textContent = `${value}%`;
-            if (spaceAudio) {
-                spaceAudio.volume = value / 100;
+            spaceVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+        });
+
+        spaceProgressBar.addEventListener('click', (e) => {
+            if (spaceAudio && spaceAudio.duration) {
+                const rect = spaceProgressBar.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                spaceAudio.currentTime = percent * spaceAudio.duration;
             }
         });
 
-        // Initialize
-        fetchAmbientStations();
+        masterVolumeSlider.addEventListener('input', (e) => {
+            masterVolume = e.target.value / 100;
+            masterVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+        });
+
+        masterMuteBtn.addEventListener('click', () => {
+            masterMuted = !masterMuted;
+            masterMuteBtn.innerHTML = masterMuted ? speakerOffSvg : speakerOnSvg;
+            masterMuteBtn.title = masterMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
+        radioMuteBtn.addEventListener('click', () => {
+            radioMuted = !radioMuted;
+            radioMuteBtn.innerHTML = radioMuted ? speakerOffSvg : speakerOnSvg;
+            radioMuteBtn.title = radioMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
+        spaceMuteBtn.addEventListener('click', () => {
+            spaceMuted = !spaceMuted;
+            spaceMuteBtn.innerHTML = spaceMuted ? speakerOffSvg : speakerOnSvg;
+            spaceMuteBtn.title = spaceMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        });
+
+        // Tag modal
+        tagBtn.addEventListener('click', openTagModal);
+        tagModalClose.addEventListener('click', closeTagModal);
+        tagModal.addEventListener('click', (e) => {
+            if (e.target === tagModal) closeTagModal();
+        });
+        tagSearch.addEventListener('input', (e) => {
+            renderTags(e.target.value);
+        });
+        tagList.addEventListener('click', (e) => {
+            const item = e.target.closest('.tag-item');
+            if (item) {
+                selectTag(item.dataset.tag);
+            }
+        });
+
+        // Favorites modal
+        openFavoritesBtn.addEventListener('click', openFavoritesModal);
+        favoritesModalClose.addEventListener('click', closeFavoritesModal);
+        favoritesModal.addEventListener('click', (e) => {
+            if (e.target === favoritesModal) closeFavoritesModal();
+        });
+        exportFavoritesBtn.addEventListener('click', exportFavorites);
+        importFavoritesBtn.addEventListener('click', importFavorites);
+
+        // Source modal
+        sourceBtn.addEventListener('click', openSourceModal);
+        sourceModalClose.addEventListener('click', closeSourceModal);
+        sourceModal.addEventListener('click', (e) => {
+            if (e.target === sourceModal) closeSourceModal();
+        });
+        sourceList.addEventListener('click', (e) => {
+            const item = e.target.closest('.tag-item');
+            if (item) {
+                selectSource(item.dataset.source);
+            }
+        });
+
+        // Station info modal
+        stationInfoClose.addEventListener('click', closeStationInfoModal);
+        stationInfoModal.addEventListener('click', (e) => {
+            if (e.target === stationInfoModal) closeStationInfoModal();
+        });
+        radioInfoBtn.addEventListener('click', openStationInfoModal);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeTagModal();
+                closeFavoritesModal();
+                closeSourceModal();
+                closeStationInfoModal();
+            }
+        });
+
+        // ============== Initialize ==============
+        currentTagSpan.textContent = currentTag;
+        fetchTags();
+        fetchStationsByTag(currentTag);
+        loadSources();
     </script>
 </body>
 </html>
