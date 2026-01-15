@@ -1,2 +1,4 @@
 *~
 admin/curate-stations.html
+dist/
+node_modules/

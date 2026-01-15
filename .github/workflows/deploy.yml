@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build
+        run: |
+          mkdir -p dist
+          echo "Minifying JavaScript..."
+          npx --yes esbuild app.js --minify --outfile=dist/app.js
+          echo "Minifying CSS..."
+          npx --yes esbuild styles.css --minify --outfile=dist/styles.css
+          echo "Minifying HTML..."
+          npx --yes html-minifier-terser index.html \
+            --collapse-whitespace \
+            --remove-comments \
+            --remove-redundant-attributes \
+            --remove-script-type-attributes \
+            --remove-style-link-type-attributes \
+            --minify-css true \
+            --minify-js true \
+            -o dist/index.html
+          echo "Copying assets..."
+          cp *.json dist/
+          echo "Build complete!"
+          echo "--- Size comparison ---"
+          echo "Original:"
+          wc -c app.js styles.css index.html
+          echo "Minified:"
+          wc -c dist/app.js dist/styles.css dist/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
