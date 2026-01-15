@@ -1,0 +1,74 @@
+[
+  {
+    "stationuuid": "37e6772a-5ab7-429d-84bc-fedc606cc8c4",
+    "name": "Systrum Sistum - SSR1",
+    "url_resolved": "https://systrum.net:8443/SSR1",
+    "tags": "ambient,drone,electronica,experimental",
+    "homepage": "https://www.systrum.net/",
+    "favicon": "https://www.systrum.net/assets/img/favicons/favicon.svg",
+    "country": "Australia",
+    "countrycode": "AU",
+    "codec": "MP3",
+    "bitrate": 256
+  },
+  {
+    "stationuuid": "9609ed67-0601-11e8-ae97-52543be04c81",
+    "name": "Cryosleep",
+    "url_resolved": "http://streams.echoesofbluemars.org:8000/cryosleep",
+    "tags": "ambient,calm,music,nobeat,sleep,space",
+    "homepage": "http://www.echoesofbluemars.org/cryosleep.php",
+    "favicon": "http://www.echoesofbluemars.org/images/favicon.ico",
+    "country": "The United States Of America",
+    "countrycode": "US",
+    "codec": "MP3",
+    "bitrate": 128
+  },
+  {
+    "stationuuid": "70bb22f0-8cd6-416f-ad17-54783844c7a4",
+    "name": "24/7 SciFi Radio",
+    "url_resolved": "https://ec6.yesstreaming.net:1465/stream",
+    "tags": "ambient,new age,sci-fi",
+    "homepage": "https://www.247onlineradio.com/24-7-online-radio-group-stations/24-7-scifi-radio/",
+    "favicon": "https://www.247onlineradio.com/wp-content/uploads/2023/04/2019-08-24-16.30.25-scaled.jpg",
+    "country": "The United Kingdom Of Great Britain And Northern Ireland",
+    "countrycode": "GB",
+    "codec": "MP3",
+    "bitrate": 64
+  },
+  {
+    "stationuuid": "4461c574-4215-43b8-aeb1-dfcfc0965b2f",
+    "name": "Radio Record Ambient",
+    "url_resolved": "http://radiorecord.hostingradio.ru/ambient96.aacp",
+    "tags": "ambient",
+    "homepage": "https://radiorecord.ru/",
+    "favicon": "https://cdn-profiles.tunein.com/s309967/images/logod.jpg?t=1",
+    "country": "The Russian Federation",
+    "countrycode": "RU",
+    "codec": "AAC",
+    "bitrate": 0
+  },
+  {
+    "stationuuid": "737c84ae-4529-40cc-970c-bcd1ec561068",
+    "name": "ISEKOI Radio | Non-Stop Ambient",
+    "url_resolved": "https://public.isekoi-radio.com/listen/ambient/ambientradio.flac",
+    "tags": "ambient,meditation,relax,relaxation",
+    "homepage": "https://isekoi-radio.com/",
+    "favicon": "https://i.postimg.cc/3rFkNkY4/LOGO-3-2-bg3.png",
+    "country": "France",
+    "countrycode": "fr",
+    "codec": "OGG",
+    "bitrate": 0
+  },
+  {
+    "stationuuid": "c06ad381-2ef8-4fd0-94f7-3d2ba41f308c",
+    "name": "Sleepbot",
+    "url_resolved": "http://primarystream.sleepbot.com:8218/seb",
+    "tags": "ambient",
+    "homepage": "https://sleepbot.com/ambience/broadcast/",
+    "favicon": "https://sleepbot.com/ambience/broadcast/assets/images/broadcast.gif",
+    "country": "The United States Of America",
+    "countrycode": "US",
+    "codec": "MP3",
+    "bitrate": 56
+  }
+]

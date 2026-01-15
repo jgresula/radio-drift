@@ -521,6 +521,34 @@
             border-radius: 4px;
         }
 
+        /* Section labels for modal lists */
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #666;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        /* Offline station styling */
+        .tag-item.offline {
+            opacity: 0.5;
+        }
+
+        .tag-item.offline .tag-name::after {
+            content: 'offline';
+            font-size: 0.6rem;
+            color: #f44336;
+            margin-left: 0.5rem;
+            font-weight: normal;
+        }
+
         /* Favorites list */
         .favorites-list {
             display: flex;
@@ -788,12 +816,12 @@
             </div>
         </div>
 
-        <!-- Ambient Radio Channel -->
+        <!-- Radio Roulette Channel -->
         <div class="channel" id="radio-channel">
             <div class="channel-header" data-channel="radio">
                 <div class="channel-header-left">
                     <span class="channel-toggle">&#9660;</span>
-                    <span class="channel-title">Ambient Radio</span>
+                    <span class="channel-title">Radio Roulette</span>
                 </div>
                 <span class="channel-status" id="radio-status">Stopped</span>
             </div>
@@ -816,13 +844,52 @@
                     <button id="radio-toggle" title="Play/Pause">&#9654;</button>
                     <button id="radio-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                     <div class="volume-container">
-                        <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="70">
+                        <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="50">
                         <span class="volume-value" id="radio-volume-value">70%</span>
                     </div>
                 </div>
                 <div class="button-row">
                     <button class="shuffle-btn" id="radio-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
                     <button class="favorites-btn" id="open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ambient Radio Channel (Curated) -->
+        <div class="channel" id="curated-channel">
+            <div class="channel-header" data-channel="curated">
+                <div class="channel-header-left">
+                    <span class="channel-toggle">&#9660;</span>
+                    <span class="channel-title">Ambient Radio</span>
+                </div>
+                <span class="channel-status" id="curated-status">Stopped</span>
+            </div>
+            <div class="channel-content">
+                <div class="tag-row">
+                    <button class="tag-btn" id="curated-station-btn" title="Select station">
+                        <span id="current-curated-station">Select station</span>
+                        <span>&#9662;</span>
+                    </button>
+                </div>
+                <div class="now-playing-row">
+                    <div class="now-playing" id="curated-now-playing">Click play to start</div>
+                    <div class="now-playing-actions">
+                        <button id="curated-favorite" title="Add to favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                        <button id="curated-info" title="Station info"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+                    </div>
+                </div>
+                <div class="now-playing-meta" id="curated-meta"></div>
+                <div class="controls">
+                    <button id="curated-toggle" title="Play/Pause">&#9654;</button>
+                    <button id="curated-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
+                    <div class="volume-container">
+                        <input type="range" class="volume-slider" id="curated-volume" min="0" max="100" value="50">
+                        <span class="volume-value" id="curated-volume-value">70%</span>
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button class="shuffle-btn" id="curated-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
+                    <button class="favorites-btn" id="curated-open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
                 </div>
             </div>
         </div>
@@ -892,7 +959,7 @@
                     <button id="space-toggle" title="Play/Pause">&#9654;</button>
                     <button id="space-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
                     <div class="volume-container">
-                        <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="40">
+                        <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="50">
                         <span class="volume-value" id="space-volume-value">40%</span>
                     </div>
                 </div>
@@ -978,6 +1045,42 @@
         </div>
     </div>
 
+    <!-- Curated Station Selection Modal -->
+    <div class="modal-overlay" id="curated-station-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Select Station</span>
+                <button class="modal-close" id="curated-station-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="search-input" id="curated-station-search" placeholder="Search stations...">
+                <div id="curated-favorites-section" style="display: none;">
+                    <div class="section-label">Favorites</div>
+                    <div class="tag-list" id="curated-favorites-list"></div>
+                </div>
+                <div class="section-label" id="curated-all-label">All Stations</div>
+                <div class="tag-list" id="curated-station-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Curated Favorites Modal -->
+    <div class="modal-overlay" id="curated-favorites-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Favorite Stations</span>
+                <button class="modal-close" id="curated-favorites-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="favorites-list" id="curated-favorites-manage-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="curated-import-favorites">Import</button>
+                <button id="curated-export-favorites">Export</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============== Constants ==============
         const BLACKLIST_KEY = 'ambientRadioBlacklist';
@@ -992,6 +1095,12 @@
         const MAX_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
         const TAGS_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 day
         const MAX_RETRY_ATTEMPTS = 10;
+
+        // Curated Ambient Radio constants
+        const CURATED_STATIONS_FILE = 'ambient-stations.json';
+        const CURATED_BLACKLIST_KEY = 'ambientCuratedBlacklist';
+        const CURATED_FAVORITES_KEY = 'ambientCuratedFavorites';
+        const CURATED_SELECTED_KEY = 'ambientCuratedSelected';
 
         // ============== State ==============
         let spaceAudioClips = [];
@@ -1019,6 +1128,16 @@
         let atcPlayer = null;
         let atcPlayerReady = false;
         let radioBufferingTimeout = null;
+
+        // Curated Ambient Radio state
+        let curatedStations = [];
+        let curatedAudio = null;
+        let currentCuratedStation = null;
+        let curatedStopping = false;
+        let curatedMuted = false;
+        let curatedShuffledPlaylist = [];
+        let curatedPlaylistIndex = 0;
+        let curatedBufferingTimeout = null;
 
         // ============== DOM Elements ==============
         const radioToggleBtn = document.getElementById('radio-toggle');
@@ -1089,6 +1208,35 @@
         const stationInfoClose = document.getElementById('station-info-close');
         const stationInfoContent = document.getElementById('station-info-content');
 
+        // Curated channel elements
+        const curatedToggleBtn = document.getElementById('curated-toggle');
+        const curatedShuffleBtn = document.getElementById('curated-shuffle');
+        const curatedVolumeSlider = document.getElementById('curated-volume');
+        const curatedVolumeValue = document.getElementById('curated-volume-value');
+        const curatedStatus = document.getElementById('curated-status');
+        const curatedNowPlaying = document.getElementById('curated-now-playing');
+        const curatedMeta = document.getElementById('curated-meta');
+        const curatedFavoriteBtn = document.getElementById('curated-favorite');
+        const curatedInfoBtn = document.getElementById('curated-info');
+        const curatedMuteBtn = document.getElementById('curated-mute');
+        const curatedStationBtn = document.getElementById('curated-station-btn');
+        const currentCuratedStationSpan = document.getElementById('current-curated-station');
+
+        // Curated modals
+        const curatedStationModal = document.getElementById('curated-station-modal');
+        const curatedStationModalClose = document.getElementById('curated-station-modal-close');
+        const curatedStationSearch = document.getElementById('curated-station-search');
+        const curatedStationList = document.getElementById('curated-station-list');
+        const curatedFavoritesList = document.getElementById('curated-favorites-list');
+        const curatedFavoritesSection = document.getElementById('curated-favorites-section');
+
+        const curatedFavoritesModal = document.getElementById('curated-favorites-modal');
+        const curatedFavoritesModalClose = document.getElementById('curated-favorites-modal-close');
+        const curatedFavoritesManageList = document.getElementById('curated-favorites-manage-list');
+        const curatedOpenFavoritesBtn = document.getElementById('curated-open-favorites');
+        const curatedImportFavoritesBtn = document.getElementById('curated-import-favorites');
+        const curatedExportFavoritesBtn = document.getElementById('curated-export-favorites');
+
         // ============== SVG Icons ==============
         const speakerOnSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
         const speakerOffSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
@@ -1121,42 +1269,52 @@
         }
 
         // ============== Blacklist Functions ==============
-        function getBlacklist() {
+        function getBlacklist(key) {
             try {
-                return JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '{}');
+                return JSON.parse(localStorage.getItem(key) || '{}');
             } catch { return {}; }
         }
 
-        function saveBlacklist(blacklist) {
-            localStorage.setItem(BLACKLIST_KEY, JSON.stringify(blacklist));
+        function saveBlacklist(key, blacklist) {
+            localStorage.setItem(key, JSON.stringify(blacklist));
         }
 
-        function isStationBlacklisted(stationId) {
-            const blacklist = getBlacklist();
+        function isStationBlacklisted(key, stationId) {
+            const blacklist = getBlacklist(key);
             const entry = blacklist[stationId];
             if (!entry) return false;
             if (Date.now() >= entry.until) {
                 delete blacklist[stationId];
-                saveBlacklist(blacklist);
+                saveBlacklist(key, blacklist);
                 return false;
             }
             return true;
         }
 
-        function blacklistStation(stationId) {
-            const blacklist = getBlacklist();
+        function blacklistStation(key, stationId, onUpdate) {
+            const blacklist = getBlacklist(key);
             const entry = blacklist[stationId] || { fails: 0 };
             entry.fails++;
             const ttl = Math.min(BASE_TTL * Math.pow(2, entry.fails - 1), MAX_TTL);
             entry.until = Date.now() + ttl;
             blacklist[stationId] = entry;
-            saveBlacklist(blacklist);
+            saveBlacklist(key, blacklist);
             console.log(`Station ${stationId} blacklisted for ${Math.round(ttl / 3600000)}h (fail #${entry.fails})`);
-            updateTagDisplay();
+            if (onUpdate) onUpdate();
+        }
+
+        function unblacklistStation(key, stationId, onUpdate) {
+            const blacklist = getBlacklist(key);
+            if (blacklist[stationId]) {
+                delete blacklist[stationId];
+                saveBlacklist(key, blacklist);
+                console.log(`Station ${stationId} removed from blacklist (now playing)`);
+                if (onUpdate) onUpdate();
+            }
         }
 
         function getAvailableStations() {
-            return stations.filter(s => !isStationBlacklisted(s.stationuuid));
+            return stations.filter(s => !isStationBlacklisted(BLACKLIST_KEY, s.stationuuid));
         }
 
         function getAvailableStationCount() {
@@ -1176,23 +1334,23 @@
         }
 
         // ============== Favorites Functions ==============
-        function getFavorites() {
+        function getFavorites(key) {
             try {
-                return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+                return JSON.parse(localStorage.getItem(key) || '[]');
             } catch { return []; }
         }
 
-        function saveFavorites(favorites) {
-            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        function saveFavorites(key, favorites) {
+            localStorage.setItem(key, JSON.stringify(favorites));
         }
 
-        function isStationFavorite(stationId) {
-            return getFavorites().some(f => f.stationuuid === stationId);
+        function isStationFavorite(key, stationId) {
+            return getFavorites(key).some(f => f.stationuuid === stationId);
         }
 
         function toggleFavorite() {
             if (!currentStation) return;
-            const favorites = getFavorites();
+            const favorites = getFavorites(FAVORITES_KEY);
             const index = favorites.findIndex(f => f.stationuuid === currentStation.stationuuid);
             if (index >= 0) {
                 favorites.splice(index, 1);
@@ -1208,11 +1366,11 @@
                 radioFavoriteBtn.innerHTML = heartFilledSvg;
                 radioFavoriteBtn.classList.add('active');
             }
-            saveFavorites(favorites);
+            saveFavorites(FAVORITES_KEY, favorites);
         }
 
         function updateFavoriteButton() {
-            if (currentStation && isStationFavorite(currentStation.stationuuid)) {
+            if (currentStation && isStationFavorite(FAVORITES_KEY, currentStation.stationuuid)) {
                 radioFavoriteBtn.innerHTML = heartFilledSvg;
                 radioFavoriteBtn.classList.add('active');
             } else {
@@ -1222,7 +1380,7 @@
         }
 
         function renderFavorites() {
-            const favorites = getFavorites();
+            const favorites = getFavorites(FAVORITES_KEY);
             if (favorites.length === 0) {
                 favoritesList.innerHTML = '<div class="empty-message">No favorites yet</div>';
                 return;
@@ -1242,7 +1400,7 @@
         }
 
         function playFavorite(index) {
-            const favorites = getFavorites();
+            const favorites = getFavorites(FAVORITES_KEY);
             const fav = favorites[index];
             if (!fav) return;
             currentStation = fav;
@@ -1251,15 +1409,15 @@
         }
 
         function removeFavorite(index) {
-            const favorites = getFavorites();
+            const favorites = getFavorites(FAVORITES_KEY);
             favorites.splice(index, 1);
-            saveFavorites(favorites);
+            saveFavorites(FAVORITES_KEY, favorites);
             renderFavorites();
             updateFavoriteButton();
         }
 
         function exportFavorites() {
-            const favorites = getFavorites();
+            const favorites = getFavorites(FAVORITES_KEY);
             const blob = new Blob([JSON.stringify(favorites, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1280,14 +1438,14 @@
                     const text = await file.text();
                     const imported = JSON.parse(text);
                     if (Array.isArray(imported)) {
-                        const existing = getFavorites();
+                        const existing = getFavorites(FAVORITES_KEY);
                         const merged = [...existing];
                         imported.forEach(imp => {
                             if (!merged.some(m => m.stationuuid === imp.stationuuid)) {
                                 merged.push(imp);
                             }
                         });
-                        saveFavorites(merged);
+                        saveFavorites(FAVORITES_KEY, merged);
                         renderFavorites();
                         updateFavoriteButton();
                     }
@@ -1375,12 +1533,16 @@
                 // YouTube volume is 0-100
                 atcPlayer.setVolume(atcVol * effectiveMaster * 100);
             }
+            if (curatedAudio) {
+                const curatedVol = curatedMuted ? 0 : (curatedVolumeSlider.value / 100);
+                curatedAudio.volume = curatedVol * effectiveMaster;
+            }
         }
 
         function getVolumeSettings() {
             try {
-                return JSON.parse(localStorage.getItem(VOLUME_SETTINGS_KEY)) || { master: 100, radio: 70, atc: 50, space: 40 };
-            } catch { return { master: 100, radio: 70, atc: 50, space: 40 }; }
+                return JSON.parse(localStorage.getItem(VOLUME_SETTINGS_KEY)) || { master: 100, radio: 50, atc: 50, space: 50, curated: 50 };
+            } catch { return { master: 100, radio: 50, atc: 50, space: 50, curated: 50 }; }
         }
 
         function saveVolumeSettings() {
@@ -1388,7 +1550,8 @@
                 master: parseInt(masterVolumeSlider.value),
                 radio: parseInt(radioVolumeSlider.value),
                 atc: parseInt(atcVolumeSlider.value),
-                space: parseInt(spaceVolumeSlider.value)
+                space: parseInt(spaceVolumeSlider.value),
+                curated: parseInt(curatedVolumeSlider.value)
             };
             localStorage.setItem(VOLUME_SETTINGS_KEY, JSON.stringify(settings));
         }
@@ -1404,6 +1567,9 @@
             atcVolumeValue.textContent = `${settings.atc}%`;
             spaceVolumeSlider.value = settings.space;
             spaceVolumeValue.textContent = `${settings.space}%`;
+            const curatedVol = settings.curated ?? 50;
+            curatedVolumeSlider.value = curatedVol;
+            curatedVolumeValue.textContent = `${curatedVol}%`;
         }
 
         // ============== Radio Browser Server Selection ==============
@@ -1614,7 +1780,7 @@
                     radioBufferingTimeout = null;
                 }
                 console.error('Radio playback error:', e);
-                blacklistStation(currentStation.stationuuid);
+                blacklistStation(BLACKLIST_KEY, currentStation.stationuuid, updateTagDisplay);
                 autoRetryNextStation();
             });
 
@@ -1644,7 +1810,7 @@
             newAudio.play().catch(err => {
                 if (radioAudio !== newAudio) return;
                 console.error('Play failed:', err);
-                blacklistStation(currentStation.stationuuid);
+                blacklistStation(BLACKLIST_KEY, currentStation.stationuuid, updateTagDisplay);
                 autoRetryNextStation();
             });
         }
@@ -1689,7 +1855,7 @@
                 // Advance playlist index (loop back to start)
                 playlistIndex = (playlistIndex + 1) % shuffledPlaylist.length;
 
-                if (!isStationBlacklisted(station.stationuuid)) {
+                if (!isStationBlacklisted(BLACKLIST_KEY, station.stationuuid)) {
                     playStation(station);
                     return;
                 }
@@ -2154,7 +2320,7 @@
             if (!currentStation) return;
 
             const station = currentStation;
-            const isFav = isStationFavorite(station.stationuuid);
+            const isFav = isStationFavorite(FAVORITES_KEY, station.stationuuid);
             const tags = station.tags ? station.tags.split(',').filter(t => t.trim()).slice(0, 5) : [];
 
             stationInfoContent.innerHTML = `
@@ -2232,6 +2398,496 @@
             if (wasPlaying) {
                 shuffleSpaceClip();
             }
+        }
+
+        // ============== Curated Ambient Radio Functions ==============
+        async function loadCuratedStations() {
+            try {
+                const response = await fetch(CURATED_STATIONS_FILE);
+                if (!response.ok) throw new Error('Failed to load curated stations');
+                curatedStations = await response.json();
+                createCuratedShuffledPlaylist();
+                updateCuratedStationDisplay();
+                curatedStatus.textContent = curatedStations.length > 0 ? 'Ready' : 'No stations';
+            } catch (err) {
+                console.error('Error loading curated stations:', err);
+                curatedStations = [];
+                curatedStatus.textContent = 'No stations';
+            }
+        }
+
+        function createCuratedShuffledPlaylist() {
+            const indexes = curatedStations.map((_, i) => i);
+            curatedShuffledPlaylist = shuffleArray(indexes);
+            curatedPlaylistIndex = 0;
+        }
+
+        function getAvailableCuratedStations() {
+            return curatedStations.filter(s => !isStationBlacklisted(CURATED_BLACKLIST_KEY, s.stationuuid));
+        }
+
+        function updateCuratedStationDisplay() {
+            const count = getAvailableCuratedStations().length;
+            const total = curatedStations.length;
+            if (total > 0) {
+                currentCuratedStationSpan.textContent = `${count} stations`;
+            } else {
+                currentCuratedStationSpan.textContent = 'No stations';
+            }
+        }
+
+        function playCuratedStation(station) {
+            if (curatedAudio) {
+                curatedAudio.pause();
+                curatedAudio.src = '';
+            }
+            if (curatedBufferingTimeout) {
+                clearTimeout(curatedBufferingTimeout);
+                curatedBufferingTimeout = null;
+            }
+
+            currentCuratedStation = station;
+            localStorage.setItem(CURATED_SELECTED_KEY, station.stationuuid);
+            curatedNowPlaying.textContent = station.name || 'Unknown Station';
+            curatedMeta.textContent = '';
+            curatedStatus.textContent = 'Connecting...';
+            curatedStatus.className = 'channel-status loading';
+            updateCuratedFavoriteButton();
+            updateCuratedStationDisplay();
+
+            const newAudio = new Audio();
+            curatedAudio = newAudio;
+            curatedStopping = false;
+            newAudio.crossOrigin = 'anonymous';
+            updateVolumes();
+
+            newAudio.addEventListener('playing', () => {
+                if (curatedAudio !== newAudio) return;
+                if (curatedBufferingTimeout) {
+                    clearTimeout(curatedBufferingTimeout);
+                    curatedBufferingTimeout = null;
+                }
+                curatedStatus.textContent = 'Playing';
+                curatedStatus.className = 'channel-status playing';
+                curatedToggleBtn.innerHTML = '&#10074;&#10074;';
+                unblacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+            });
+
+            newAudio.addEventListener('error', (e) => {
+                if (curatedAudio !== newAudio || curatedStopping) return;
+                if (curatedBufferingTimeout) {
+                    clearTimeout(curatedBufferingTimeout);
+                    curatedBufferingTimeout = null;
+                }
+                console.error('Curated playback error:', e);
+                blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                curatedStatus.textContent = 'Unavailable';
+                curatedStatus.className = 'channel-status error';
+                curatedNowPlaying.textContent = 'Station offline - try another';
+            });
+
+            newAudio.addEventListener('waiting', () => {
+                if (curatedAudio !== newAudio) return;
+                curatedStatus.textContent = 'Buffering...';
+                curatedStatus.className = 'channel-status loading';
+                if (curatedBufferingTimeout) clearTimeout(curatedBufferingTimeout);
+                curatedBufferingTimeout = setTimeout(() => {
+                    if (curatedAudio === newAudio && !curatedStopping) {
+                        console.log('Curated buffering timeout');
+                        blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                        curatedStatus.textContent = 'Unavailable';
+                        curatedStatus.className = 'channel-status error';
+                        curatedNowPlaying.textContent = 'Station offline - try another';
+                    }
+                }, 10000);
+            });
+
+            newAudio.src = station.url_resolved;
+            newAudio.play().catch(err => {
+                if (curatedAudio !== newAudio) return;
+                console.error('Curated play failed:', err);
+                blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                curatedStatus.textContent = 'Unavailable';
+                curatedStatus.className = 'channel-status error';
+                curatedNowPlaying.textContent = 'Station offline - try another';
+            });
+        }
+
+        function playCuratedStationWithAutoRetry(station) {
+            if (curatedAudio) {
+                curatedAudio.pause();
+                curatedAudio.src = '';
+            }
+            if (curatedBufferingTimeout) {
+                clearTimeout(curatedBufferingTimeout);
+                curatedBufferingTimeout = null;
+            }
+
+            currentCuratedStation = station;
+            localStorage.setItem(CURATED_SELECTED_KEY, station.stationuuid);
+            curatedNowPlaying.textContent = station.name || 'Unknown Station';
+            curatedMeta.textContent = '';
+            curatedStatus.textContent = 'Connecting...';
+            curatedStatus.className = 'channel-status loading';
+            updateCuratedFavoriteButton();
+            updateCuratedStationDisplay();
+
+            const newAudio = new Audio();
+            curatedAudio = newAudio;
+            curatedStopping = false;
+            newAudio.crossOrigin = 'anonymous';
+            updateVolumes();
+
+            newAudio.addEventListener('playing', () => {
+                if (curatedAudio !== newAudio) return;
+                if (curatedBufferingTimeout) {
+                    clearTimeout(curatedBufferingTimeout);
+                    curatedBufferingTimeout = null;
+                }
+                curatedStatus.textContent = 'Playing';
+                curatedStatus.className = 'channel-status playing';
+                curatedToggleBtn.innerHTML = '&#10074;&#10074;';
+                unblacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+            });
+
+            newAudio.addEventListener('error', (e) => {
+                if (curatedAudio !== newAudio || curatedStopping) return;
+                if (curatedBufferingTimeout) {
+                    clearTimeout(curatedBufferingTimeout);
+                    curatedBufferingTimeout = null;
+                }
+                console.error('Curated playback error (auto-retry):', e);
+                blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                playCuratedNext();
+            });
+
+            newAudio.addEventListener('waiting', () => {
+                if (curatedAudio !== newAudio) return;
+                curatedStatus.textContent = 'Buffering...';
+                curatedStatus.className = 'channel-status loading';
+                if (curatedBufferingTimeout) clearTimeout(curatedBufferingTimeout);
+                curatedBufferingTimeout = setTimeout(() => {
+                    if (curatedAudio === newAudio && !curatedStopping) {
+                        console.log('Curated buffering timeout (auto-retry)');
+                        blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                        playCuratedNext();
+                    }
+                }, 10000);
+            });
+
+            newAudio.src = station.url_resolved;
+            newAudio.play().catch(err => {
+                if (curatedAudio !== newAudio) return;
+                console.error('Curated play failed (auto-retry):', err);
+                blacklistStation(CURATED_BLACKLIST_KEY, station.stationuuid, updateCuratedStationDisplay);
+                playCuratedNext();
+            });
+        }
+
+        function playCuratedRandom() {
+            const available = getAvailableCuratedStations();
+            if (available.length === 0) {
+                curatedStatus.textContent = 'No stations';
+                curatedStatus.className = 'channel-status error';
+                curatedNowPlaying.textContent = curatedStations.length > 0 ? 'All stations offline' : 'No stations loaded';
+                return;
+            }
+            playCuratedNext();
+        }
+
+        function playCuratedNext() {
+            let attempts = 0;
+            while (attempts < curatedStations.length) {
+                const stationIndex = curatedShuffledPlaylist[curatedPlaylistIndex];
+                const station = curatedStations[stationIndex];
+                curatedPlaylistIndex = (curatedPlaylistIndex + 1) % curatedShuffledPlaylist.length;
+
+                if (!isStationBlacklisted(CURATED_BLACKLIST_KEY, station.stationuuid)) {
+                    playCuratedStationWithAutoRetry(station);
+                    return;
+                }
+                attempts++;
+            }
+
+            curatedStatus.textContent = 'No stations';
+            curatedStatus.className = 'channel-status error';
+            curatedNowPlaying.textContent = 'All stations offline';
+        }
+
+        function stopCurated() {
+            curatedStopping = true;
+            if (curatedBufferingTimeout) {
+                clearTimeout(curatedBufferingTimeout);
+                curatedBufferingTimeout = null;
+            }
+            if (curatedAudio) {
+                curatedAudio.pause();
+            }
+            curatedStatus.textContent = 'Paused';
+            curatedStatus.className = 'channel-status';
+            curatedToggleBtn.innerHTML = '&#9654;';
+        }
+
+        function toggleCurated() {
+            if (curatedAudio && !curatedAudio.paused) {
+                stopCurated();
+            } else if (curatedAudio && curatedAudio.src) {
+                curatedStopping = false;
+                curatedAudio.play().catch(() => playCuratedRandom());
+            } else {
+                playCuratedRandom();
+            }
+        }
+
+        function toggleCuratedMute() {
+            curatedMuted = !curatedMuted;
+            curatedMuteBtn.innerHTML = curatedMuted ? speakerOffSvg : speakerOnSvg;
+            curatedMuteBtn.title = curatedMuted ? 'Unmute' : 'Mute';
+            updateVolumes();
+        }
+
+        // Curated Station Selection Modal
+        function openCuratedStationModal() {
+            curatedStationSearch.value = '';
+            renderCuratedStationList('');
+            curatedStationModal.classList.add('active');
+            curatedStationSearch.focus();
+        }
+
+        function closeCuratedStationModal() {
+            curatedStationModal.classList.remove('active');
+        }
+
+        function renderCuratedStationList(filter = '') {
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            const filterLower = filter.toLowerCase();
+
+            // Filter stations
+            const filteredStations = curatedStations.filter(s =>
+                s.name.toLowerCase().includes(filterLower) ||
+                (s.tags && s.tags.toLowerCase().includes(filterLower))
+            );
+
+            // Render favorites section (if any match filter)
+            const filteredFavorites = favorites.filter(f =>
+                f.name.toLowerCase().includes(filterLower) ||
+                (f.tags && f.tags.toLowerCase().includes(filterLower))
+            );
+
+            if (filteredFavorites.length > 0) {
+                curatedFavoritesSection.style.display = 'block';
+                curatedFavoritesList.innerHTML = filteredFavorites.map(fav => {
+                    const isOffline = isStationBlacklisted(CURATED_BLACKLIST_KEY, fav.stationuuid);
+                    return `
+                        <div class="tag-item ${isOffline ? 'offline' : ''}" data-uuid="${fav.stationuuid}">
+                            <span class="tag-name">${fav.name}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                curatedFavoritesSection.style.display = 'none';
+            }
+
+            // Render all stations (excluding favorites shown above)
+            const favoriteIds = new Set(favorites.map(f => f.stationuuid));
+            const nonFavoriteStations = filteredStations.filter(s => !favoriteIds.has(s.stationuuid));
+
+            curatedStationList.innerHTML = nonFavoriteStations.map(station => {
+                const isOffline = isStationBlacklisted(CURATED_BLACKLIST_KEY, station.stationuuid);
+                const isSelected = currentCuratedStation && currentCuratedStation.stationuuid === station.stationuuid;
+                return `
+                    <div class="tag-item ${isSelected ? 'selected' : ''} ${isOffline ? 'offline' : ''}" data-uuid="${station.stationuuid}">
+                        <span class="tag-name">${station.name}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Add click handlers
+            curatedFavoritesList.querySelectorAll('.tag-item').forEach(item => {
+                item.addEventListener('click', () => selectCuratedStation(item.dataset.uuid));
+            });
+            curatedStationList.querySelectorAll('.tag-item').forEach(item => {
+                item.addEventListener('click', () => selectCuratedStation(item.dataset.uuid));
+            });
+        }
+
+        function selectCuratedStation(uuid) {
+            const station = curatedStations.find(s => s.stationuuid === uuid) ||
+                            getFavorites(CURATED_FAVORITES_KEY).find(f => f.stationuuid === uuid);
+            if (station) {
+                playCuratedStation(station);
+                closeCuratedStationModal();
+            }
+        }
+
+        // Curated Favorites
+        function toggleCuratedFavorite() {
+            if (!currentCuratedStation) return;
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            const index = favorites.findIndex(f => f.stationuuid === currentCuratedStation.stationuuid);
+
+            if (index >= 0) {
+                favorites.splice(index, 1);
+                curatedFavoriteBtn.innerHTML = heartOutlineSvg;
+                curatedFavoriteBtn.classList.remove('active');
+            } else {
+                favorites.push({
+                    stationuuid: currentCuratedStation.stationuuid,
+                    name: currentCuratedStation.name,
+                    url_resolved: currentCuratedStation.url_resolved,
+                    tags: currentCuratedStation.tags
+                });
+                curatedFavoriteBtn.innerHTML = heartFilledSvg;
+                curatedFavoriteBtn.classList.add('active');
+            }
+            saveFavorites(CURATED_FAVORITES_KEY, favorites);
+        }
+
+        function updateCuratedFavoriteButton() {
+            if (currentCuratedStation && isStationFavorite(CURATED_FAVORITES_KEY, currentCuratedStation.stationuuid)) {
+                curatedFavoriteBtn.innerHTML = heartFilledSvg;
+                curatedFavoriteBtn.classList.add('active');
+            } else {
+                curatedFavoriteBtn.innerHTML = heartOutlineSvg;
+                curatedFavoriteBtn.classList.remove('active');
+            }
+        }
+
+        function openCuratedFavoritesModal() {
+            renderCuratedFavorites();
+            curatedFavoritesModal.classList.add('active');
+        }
+
+        function closeCuratedFavoritesModal() {
+            curatedFavoritesModal.classList.remove('active');
+        }
+
+        function renderCuratedFavorites() {
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            if (favorites.length === 0) {
+                curatedFavoritesManageList.innerHTML = '<div class="empty-message">No favorites yet</div>';
+                return;
+            }
+            curatedFavoritesManageList.innerHTML = favorites.map((fav, i) => `
+                <div class="favorite-item">
+                    <div class="favorite-info">
+                        <div class="favorite-name">${fav.name}</div>
+                        <div class="favorite-tag">${fav.tags || ''}</div>
+                    </div>
+                    <div class="favorite-actions">
+                        <button onclick="playCuratedFavorite(${i})" title="Play">&#9654;</button>
+                        <button onclick="removeCuratedFavorite(${i})" title="Remove">&#10005;</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playCuratedFavorite(index) {
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            const fav = favorites[index];
+            if (!fav) return;
+            playCuratedStation(fav);
+            closeCuratedFavoritesModal();
+        }
+
+        function removeCuratedFavorite(index) {
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            favorites.splice(index, 1);
+            saveFavorites(CURATED_FAVORITES_KEY, favorites);
+            renderCuratedFavorites();
+            updateCuratedFavoriteButton();
+        }
+
+        function exportCuratedFavorites() {
+            const favorites = getFavorites(CURATED_FAVORITES_KEY);
+            const blob = new Blob([JSON.stringify(favorites, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ambient-radio-favorites.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importCuratedFavorites() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    const text = await file.text();
+                    const imported = JSON.parse(text);
+                    if (Array.isArray(imported)) {
+                        const existing = getFavorites(CURATED_FAVORITES_KEY);
+                        const merged = [...existing];
+                        imported.forEach(imp => {
+                            if (!merged.some(m => m.stationuuid === imp.stationuuid)) {
+                                merged.push(imp);
+                            }
+                        });
+                        saveFavorites(CURATED_FAVORITES_KEY, merged);
+                        renderCuratedFavorites();
+                        updateCuratedFavoriteButton();
+                    }
+                } catch (err) {
+                    console.error('Import failed:', err);
+                }
+            };
+            input.click();
+        }
+
+        // Curated Station Info
+        function showCuratedStationInfo() {
+            if (!currentCuratedStation) return;
+
+            const station = currentCuratedStation;
+            const isFav = isStationFavorite(CURATED_FAVORITES_KEY, station.stationuuid);
+            const tags = station.tags ? station.tags.split(',').filter(t => t.trim()).slice(0, 5) : [];
+
+            stationInfoContent.innerHTML = `
+                <div class="station-info">
+                    <div class="station-info-header">
+                        ${station.favicon ? `<img class="station-favicon" src="${station.favicon}" alt="" onerror="this.style.display='none'">` : ''}
+                        <div class="station-info-name">${station.name}</div>
+                    </div>
+                    ${tags.length > 0 ? `
+                        <div class="station-info-row">
+                            <span class="station-info-label">Tags</span>
+                            <div class="station-info-tags">
+                                ${tags.map(t => `<span class="station-info-tag">${t.trim()}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${station.country ? `
+                        <div class="station-info-row">
+                            <span class="station-info-label">Country</span>
+                            <span class="station-info-value">${station.country}${station.countrycode ? ` (${station.countrycode})` : ''}</span>
+                        </div>
+                    ` : ''}
+                    ${station.codec ? `
+                        <div class="station-info-row">
+                            <span class="station-info-label">Codec</span>
+                            <span class="station-info-value">${station.codec}${station.bitrate ? ` @ ${station.bitrate} kbps` : ''}</span>
+                        </div>
+                    ` : ''}
+                    ${station.homepage ? `
+                        <div class="station-info-row">
+                            <span class="station-info-label">Homepage</span>
+                            <span class="station-info-value"><a href="${station.homepage}" target="_blank">Visit</a></span>
+                        </div>
+                    ` : ''}
+                    <div class="station-info-actions">
+                        <button onclick="toggleCuratedFavorite(); showCuratedStationInfo();">
+                            ${isFav ? heartFilledSvg : heartOutlineSvg}
+                            ${isFav ? 'Remove Favorite' : 'Add Favorite'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            stationInfoModal.classList.add('active');
         }
 
         // ============== Event Listeners ==============
@@ -2327,6 +2983,37 @@
             updateVolumes();
         });
 
+        // Curated channel controls
+        curatedToggleBtn.addEventListener('click', toggleCurated);
+        curatedShuffleBtn.addEventListener('click', playCuratedRandom);
+        curatedFavoriteBtn.addEventListener('click', toggleCuratedFavorite);
+        curatedInfoBtn.addEventListener('click', showCuratedStationInfo);
+        curatedMuteBtn.addEventListener('click', toggleCuratedMute);
+        curatedVolumeSlider.addEventListener('input', (e) => {
+            curatedVolumeValue.textContent = `${e.target.value}%`;
+            updateVolumes();
+            saveVolumeSettings();
+        });
+
+        // Curated station selection modal
+        curatedStationBtn.addEventListener('click', openCuratedStationModal);
+        curatedStationModalClose.addEventListener('click', closeCuratedStationModal);
+        curatedStationModal.addEventListener('click', (e) => {
+            if (e.target === curatedStationModal) closeCuratedStationModal();
+        });
+        curatedStationSearch.addEventListener('input', (e) => {
+            renderCuratedStationList(e.target.value);
+        });
+
+        // Curated favorites modal
+        curatedOpenFavoritesBtn.addEventListener('click', openCuratedFavoritesModal);
+        curatedFavoritesModalClose.addEventListener('click', closeCuratedFavoritesModal);
+        curatedFavoritesModal.addEventListener('click', (e) => {
+            if (e.target === curatedFavoritesModal) closeCuratedFavoritesModal();
+        });
+        curatedExportFavoritesBtn.addEventListener('click', exportCuratedFavorites);
+        curatedImportFavoritesBtn.addEventListener('click', importCuratedFavorites);
+
         // Tag modal
         tagBtn.addEventListener('click', openTagModal);
         tagModalClose.addEventListener('click', closeTagModal);
@@ -2387,8 +3074,8 @@
         // ============== Collapsible Channels ==============
         function getCollapsedState() {
             try {
-                return JSON.parse(localStorage.getItem(CHANNEL_COLLAPSED_KEY)) || { radio: false, atc: false, space: true };
-            } catch { return { radio: false, atc: false, space: true }; }
+                return JSON.parse(localStorage.getItem(CHANNEL_COLLAPSED_KEY)) || { radio: false, curated: false, atc: false, space: true };
+            } catch { return { radio: false, curated: false, atc: false, space: true }; }
         }
 
         function saveCollapsedState(state) {
@@ -2405,6 +3092,7 @@
         function applyCollapsedState() {
             const state = getCollapsedState();
             document.getElementById('radio-channel').classList.toggle('collapsed', state.radio);
+            document.getElementById('curated-channel').classList.toggle('collapsed', state.curated);
             document.getElementById('atc-channel').classList.toggle('collapsed', state.atc);
             document.getElementById('space-channel').classList.toggle('collapsed', state.space);
         }
@@ -2428,6 +3116,7 @@
         loadSources();
         loadAtcSources();
         loadYouTubeAPI();
+        loadCuratedStations();
     </script>
 </body>
 </html>
