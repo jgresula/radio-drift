@@ -1,78 +1,107 @@
 [
     {
         "id": "Buc9kMfTerg",
-        "name": "ATL - Atlanta Flightradar24 with ATC"
+        "name": "ATL - Atlanta Flightradar24 with ATC",
+        "timezone": "America/New_York"
     },
     {
         "id": "IfP3WzymBuI",
-        "name": "DFW - Dallas/Fort Worth East Tower"
-    },
-    {
-        "id": "RQmWYMSV-pk",
-        "name": "HNL - Honolulu ATC + Radar"
-    },
-    {
-        "id": "xq_kuLD8T0A",
-        "name": "JFK - New York Kennedy ATC"
-    },
-    {
-        "id": "cn8_34TuMaM",
-        "name": "LAS - Las Vegas 24/7 Runways 26R & 26L"
-    },
-    {
-        "id": "VjqKog3XwZ8",
-        "name": "LAX - Los Angeles Runways 24L & 24R"
-    },
-    {
-        "id": "UQaSS4_VAV4",
-        "name": "LAX - Los Angeles Runways 25L & 25R"
-    },
-    {
-        "id": "xWvWtk2aOfI",
-        "name": "LAX - Los Angeles Runway with ATC"
-    },
-    {
-        "id": "t0GrpAgdBFI",
-        "name": "LAX - Los Angeles Realtime Sim 24HRS"
-    },
-    {
-        "id": "rwYhIuGWZvc",
-        "name": "LGA - LaGuardia New York ATC"
-    },
-    {
-        "id": "OXeFcz3lEz4",
-        "name": "MIA - Miami Runway 9/27 with Tower"
-    },
-    {
-        "id": "cMdLxB3mOdo",
-        "name": "SEA - Seattle-Tacoma ATC & Radar"
-    },
-    {
-        "id": "-VHAib_44cU",
-        "name": "SFO - San Francisco International"
-    },
-    {
-        "id": "vbcbIow1tP8",
-        "name": "SFO - San Francisco Tracking & Tower ATC"
-    },
-    {
-        "id": "84_U7vOtfbE",
-        "name": "STL - St. Louis Lambert International"
-    },
-    {
-        "id": "0jUGiYZKAMg",
-        "name": "PRG - Prague Vaclav Havel 24/7"
+        "name": "DFW - Dallas/Fort Worth East Tower",
+        "timezone": "America/Chicago"
     },
     {
         "id": "ygC5wni2DMQ",
-        "name": "HKG - Hong Kong Int'l Airport ATC"
+        "name": "HKG - Hong Kong Int'l Airport ATC",
+        "timezone": "Asia/Hong_Kong"
+    },
+    {
+        "id": "RQmWYMSV-pk",
+        "name": "HNL - Honolulu ATC + Radar",
+        "timezone": "Pacific/Honolulu"
+    },
+    {
+        "id": "xq_kuLD8T0A",
+        "name": "JFK - New York Kennedy ATC",
+        "timezone": "America/New_York"
+    },
+    {
+        "id": "cn8_34TuMaM",
+        "name": "LAS - Las Vegas 24/7 Runways 26R & 26L",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "VjqKog3XwZ8",
+        "name": "LAX - Los Angeles Runways 24L & 24R",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "UQaSS4_VAV4",
+        "name": "LAX - Los Angeles Runways 25L & 25R",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "t0GrpAgdBFI",
+        "name": "LAX - Los Angeles Realtime Sim 24HRS",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "xWvWtk2aOfI",
+        "name": "LAX - Los Angeles Runway with ATC",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "rwYhIuGWZvc",
+        "name": "LGA - LaGuardia New York ATC",
+        "timezone": "America/New_York"
+    },
+    {
+        "id": "OXeFcz3lEz4",
+        "name": "MIA - Miami Runway 9/27 with Tower",
+        "timezone": "America/New_York"
     },
     {
         "id": "wnDSkDnLRZg",
-        "name": "PER - Perth Jandakot YPJT"
+        "name": "PER - Perth Jandakot YPJT",
+        "timezone": "Australia/Perth"
+    },
+    {
+        "id": "0jUGiYZKAMg",
+        "name": "PRG - Prague Vaclav Havel 24/7",
+        "timezone": "Europe/Prague"
+    },
+    {
+        "id": "cMdLxB3mOdo",
+        "name": "SEA - Seattle-Tacoma ATC & Radar",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "HXhVJ_0Vxpw",
+        "name": "SEA - Seattle-Tacoma Flightradar24",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "-VHAib_44cU",
+        "name": "SFO - San Francisco International",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "vbcbIow1tP8",
+        "name": "SFO - San Francisco Tracking & Tower ATC",
+        "timezone": "America/Los_Angeles"
+    },
+    {
+        "id": "84_U7vOtfbE",
+        "name": "STL - St. Louis Lambert International",
+        "timezone": "America/Chicago"
     },
     {
         "id": "NOZVUBsCDEI",
-        "name": "TPE - Taiwan Taoyuan Int'l ATC"
+        "name": "TPE - Taiwan Taoyuan Int'l ATC",
+        "timezone": "Asia/Taipei"
+    },
+    {
+        "id": "Rfu0ORTHP68",
+        "name": "YYZ - Toronto Pearson Flightradar24 with ATC",
+        "timezone": "America/Toronto"
     }
 ]
