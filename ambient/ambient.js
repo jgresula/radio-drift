@@ -6,6 +6,7 @@ const CURATED_BLACKLIST_KEY = 'ambientCuratedBlacklist';
 const CURATED_FAVORITES_KEY = 'ambientCuratedFavorites';
 const CURATED_SELECTED_KEY = 'ambientCuratedSelected';
 const SELECTED_ATC_SOURCE_KEY = 'ambientAtcSource';
+const ATC_SORT_KEY = 'ambientAtcSort';
 const VOLUME_SETTINGS_KEY = 'ambientVolumeSettings';
 const CHANNEL_COLLAPSED_KEY = 'ambientChannelCollapsed';
 
@@ -21,9 +22,13 @@ let curatedBufferingTimeout = null;
 
 let allAtcSources = [];
 let currentAtcSource = localStorage.getItem(SELECTED_ATC_SOURCE_KEY) || null;
+let currentAtcSourceObj = null;
 let atcPlayer = null;
 let atcPlayerReady = false;
 let atcMuted = false;
+let atcModalTimeInterval = null;
+let atcButtonTimeInterval = null;
+let atcSortByTime = localStorage.getItem(ATC_SORT_KEY) === 'time';
 
 let masterMuted = false;
 let masterVolume = 1;
@@ -70,6 +75,7 @@ const currentAtcSourceSpan = document.getElementById('current-atc-source');
 const atcSourceModal = document.getElementById('atc-source-modal');
 const atcSourceModalClose = document.getElementById('atc-source-modal-close');
 const atcSourceList = document.getElementById('atc-source-list');
+const atcSortToggle = document.getElementById('atc-sort-toggle');
 const youtubeContainer = document.getElementById('youtube-container');
 const atcDisabledMessage = document.getElementById('atc-disabled-message');
 const atcControls = document.getElementById('atc-controls');
@@ -575,6 +581,53 @@ function closeStationInfoModal() {
 }
 
 // ============== ATC (YouTube) Functions ==============
+function getLocalTimeMinutes(timezone) {
+    try {
+        const date = new Date();
+        const timeStr = date.toLocaleTimeString('en-US', {
+            timeZone: timezone,
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    } catch (e) {
+        return 0;
+    }
+}
+
+function formatLocalTime(timezone) {
+    try {
+        return new Date().toLocaleTimeString(undefined, {
+            timeZone: timezone,
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+    } catch (e) {
+        return '';
+    }
+}
+
+function updateAtcSourceButtonTime() {
+    if (!currentAtcSourceObj || !currentAtcSourceObj.timezone) return;
+    const time = formatLocalTime(currentAtcSourceObj.timezone);
+    currentAtcSourceSpan.textContent = time ? `${currentAtcSourceObj.name} · ${time}` : currentAtcSourceObj.name;
+}
+
+function startAtcButtonTimeInterval() {
+    if (atcButtonTimeInterval) clearInterval(atcButtonTimeInterval);
+    updateAtcSourceButtonTime();
+    atcButtonTimeInterval = setInterval(updateAtcSourceButtonTime, 1000);
+}
+
+function stopAtcButtonTimeInterval() {
+    if (atcButtonTimeInterval) {
+        clearInterval(atcButtonTimeInterval);
+        atcButtonTimeInterval = null;
+    }
+}
+
 async function loadAtcSources() {
     try {
         const response = await fetch('../atc-sources.json');
@@ -582,10 +635,11 @@ async function loadAtcSources() {
         allAtcSources = await response.json();
 
         if (currentAtcSource && allAtcSources.some(s => s.id === currentAtcSource)) {
-            const source = allAtcSources.find(s => s.id === currentAtcSource);
-            currentAtcSourceSpan.textContent = source.name;
+            currentAtcSourceObj = allAtcSources.find(s => s.id === currentAtcSource);
+            startAtcButtonTimeInterval();
         } else {
             currentAtcSource = null;
+            currentAtcSourceObj = null;
             currentAtcSourceSpan.textContent = 'None';
             showAtcDisabled();
         }
@@ -699,8 +753,10 @@ function toggleAtc() {
 function selectAtcSource(sourceId) {
     if (sourceId === null) {
         currentAtcSource = null;
+        currentAtcSourceObj = null;
         localStorage.removeItem(SELECTED_ATC_SOURCE_KEY);
         currentAtcSourceSpan.textContent = 'None';
+        stopAtcButtonTimeInterval();
 
         if (atcPlayer) {
             atcPlayer.destroy();
@@ -713,8 +769,9 @@ function selectAtcSource(sourceId) {
         if (!source) return;
 
         currentAtcSource = sourceId;
+        currentAtcSourceObj = source;
         localStorage.setItem(SELECTED_ATC_SOURCE_KEY, sourceId);
-        currentAtcSourceSpan.textContent = source.name;
+        startAtcButtonTimeInterval();
 
         createAtcPlayer(sourceId);
     }
@@ -722,30 +779,82 @@ function selectAtcSource(sourceId) {
     closeAtcSourceModal();
 }
 
+function getSortedAtcSources() {
+    const sources = [...allAtcSources];
+    if (atcSortByTime) {
+        sources.sort((a, b) => {
+            const timeA = a.timezone ? getLocalTimeMinutes(a.timezone) : 0;
+            const timeB = b.timezone ? getLocalTimeMinutes(b.timezone) : 0;
+            return timeA - timeB;
+        });
+    } else {
+        sources.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return sources;
+}
+
+function toggleAtcSort() {
+    atcSortByTime = !atcSortByTime;
+    localStorage.setItem(ATC_SORT_KEY, atcSortByTime ? 'time' : 'name');
+    renderAtcSources();
+}
+
 function renderAtcSources() {
     const noneSelected = currentAtcSource === null;
+    const sortedSources = getSortedAtcSources();
+
+    // Update sort toggle button text
+    atcSortToggle.textContent = atcSortByTime ? '⏱ Time' : 'A-Z';
+    atcSortToggle.title = atcSortByTime ? 'Sorted by time (click to sort by name)' : 'Sorted by name (click to sort by time)';
+
     let html = `
         <div class="tag-item ${noneSelected ? 'selected' : ''}" data-atc-source="none">
             <span class="tag-name">None</span>
+            <span class="tag-time"></span>
         </div>
     `;
 
-    html += allAtcSources.map(source => `
-        <div class="tag-item ${source.id === currentAtcSource ? 'selected' : ''}" data-atc-source="${source.id}">
-            <span class="tag-name">${source.name}</span>
-        </div>
-    `).join('');
+    html += sortedSources.map(source => {
+        const time = source.timezone ? formatLocalTime(source.timezone) : '';
+        return `
+            <div class="tag-item ${source.id === currentAtcSource ? 'selected' : ''}" data-atc-source="${source.id}">
+                <span class="tag-name">${source.name}</span>
+                <span class="tag-time">${time}</span>
+            </div>
+        `;
+    }).join('');
 
     atcSourceList.innerHTML = html;
+}
+
+function updateAtcModalTimes() {
+    const timeSpans = atcSourceList.querySelectorAll('.tag-item[data-atc-source]');
+    timeSpans.forEach(item => {
+        const sourceId = item.dataset.atcSource;
+        if (sourceId === 'none') return;
+        const source = allAtcSources.find(s => s.id === sourceId);
+        if (source && source.timezone) {
+            const timeSpan = item.querySelector('.tag-time');
+            if (timeSpan) {
+                timeSpan.textContent = formatLocalTime(source.timezone);
+            }
+        }
+    });
 }
 
 function openAtcSourceModal() {
     atcSourceModal.classList.add('active');
     renderAtcSources();
+    if (atcModalTimeInterval) clearInterval(atcModalTimeInterval);
+    atcModalTimeInterval = setInterval(updateAtcModalTimes, 1000);
 }
 
 function closeAtcSourceModal() {
     atcSourceModal.classList.remove('active');
+    if (atcModalTimeInterval) {
+        clearInterval(atcModalTimeInterval);
+        atcModalTimeInterval = null;
+    }
 }
 
 function toggleAtcFullscreen() {
@@ -854,6 +963,7 @@ atcMuteBtn.addEventListener('click', () => {
 // ATC source modal
 atcSourceBtn.addEventListener('click', openAtcSourceModal);
 atcSourceModalClose.addEventListener('click', closeAtcSourceModal);
+atcSortToggle.addEventListener('click', toggleAtcSort);
 atcSourceModal.addEventListener('click', (e) => {
     if (e.target === atcSourceModal) closeAtcSourceModal();
 });
@@ -903,7 +1013,12 @@ loadCuratedStations();
 loadAtcSources();
 loadYouTubeAPI();
 
-// Prevent blacklisting on page unload
+// Cleanup on page unload
 window.addEventListener('beforeunload', () => {
     curatedStopping = true;
+    stopAtcButtonTimeInterval();
+    if (atcModalTimeInterval) {
+        clearInterval(atcModalTimeInterval);
+        atcModalTimeInterval = null;
+    }
 });
