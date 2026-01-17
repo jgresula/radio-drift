@@ -1,29 +1,5 @@
 [
   {
-    "stationuuid": "37e6772a-5ab7-429d-84bc-fedc606cc8c4",
-    "name": "Systrum Sistum - SSR1",
-    "url_resolved": "https://systrum.net:8443/SSR1",
-    "tags": "ambient,drone,electronica,experimental",
-    "homepage": "https://www.systrum.net/",
-    "favicon": "https://www.systrum.net/assets/img/favicons/favicon.svg",
-    "country": "Australia",
-    "countrycode": "AU",
-    "codec": "MP3",
-    "bitrate": 256
-  },
-  {
-    "stationuuid": "9609ed67-0601-11e8-ae97-52543be04c81",
-    "name": "Cryosleep",
-    "url_resolved": "http://streams.echoesofbluemars.org:8000/cryosleep",
-    "tags": "ambient,calm,music,nobeat,sleep,space",
-    "homepage": "http://www.echoesofbluemars.org/cryosleep.php",
-    "favicon": "http://www.echoesofbluemars.org/images/favicon.ico",
-    "country": "The United States Of America",
-    "countrycode": "US",
-    "codec": "MP3",
-    "bitrate": 128
-  },
-  {
     "stationuuid": "70bb22f0-8cd6-416f-ad17-54783844c7a4",
     "name": "24/7 SciFi Radio",
     "url_resolved": "https://ec6.yesstreaming.net:1465/stream",
@@ -34,6 +10,18 @@
     "countrycode": "GB",
     "codec": "MP3",
     "bitrate": 64
+  },
+  {
+    "stationuuid": "37e6772a-5ab7-429d-84bc-fedc606cc8c4",
+    "name": "Systrum Sistum - SSR1",
+    "url_resolved": "https://systrum.net:8443/SSR1",
+    "tags": "ambient,drone,electronica,experimental",
+    "homepage": "https://www.systrum.net/",
+    "favicon": "https://www.systrum.net/assets/img/favicons/favicon.svg",
+    "country": "Australia",
+    "countrycode": "AU",
+    "codec": "MP3",
+    "bitrate": 256
   },
   {
     "stationuuid": "4461c574-4215-43b8-aeb1-dfcfc0965b2f",
@@ -48,6 +36,66 @@
     "bitrate": 0
   },
   {
+    "stationuuid": "4ee37a03-e97b-4c93-8caf-ef6eb8de7646",
+    "name": "- 0 N - Chillout on Radio",
+    "url_resolved": "https://0n-chillout.radionetz.de/0n-chillout.mp3",
+    "tags": "ambient,chillout,easy listening,electro",
+    "homepage": "http://www.0nradio.com/",
+    "favicon": "https://www.0nradio.com/logos/0n-chillout_600x600.jpg",
+    "country": "Germany",
+    "countrycode": "DE",
+    "codec": "MP3",
+    "bitrate": 128
+  },
+  {
+    "stationuuid": "479d1fad-f328-11e9-a96c-52543be04c81",
+    "name": "Traxx FM - Ambient",
+    "url_resolved": "http://traxx011.ice.infomaniak.ch/traxx011-low.mp3",
+    "tags": "ambient,ambient and relaxation music,chill,chillout,commercial-free,no ads,relax,relaxation,relaxation music,relaxing",
+    "homepage": "http://www.traxx.fm/",
+    "favicon": "",
+    "country": "Switzerland",
+    "countrycode": "CH",
+    "codec": "MP3",
+    "bitrate": 128
+  },
+  {
+    "stationuuid": "4dad0ae3-720a-434e-b350-7186e4c5ea6f",
+    "name": "MyNoise Pure Nature",
+    "url_resolved": "https://purenature-mynoise.radioca.st/stream",
+    "tags": "ambient,ambient and relaxation music,nature",
+    "homepage": "https://mynoise.net/",
+    "favicon": "https://mynoise.net/apple-touch-icon.png",
+    "country": "Belgium",
+    "countrycode": "BE",
+    "codec": "MP3",
+    "bitrate": 160
+  },
+  {
+    "stationuuid": "87aa35fa-37b4-47bf-bb10-bceeb024a7d3",
+    "name": "Radio Nature",
+    "url_resolved": "https://stream.zeno.fm/3ac97ysh6f0uv.aac",
+    "tags": "ambient,chill,meditation,nature,relax,zen",
+    "homepage": "http://radionature.weebly.com/",
+    "favicon": "https://www.radio.pl/300/radionature.png",
+    "country": "Spain",
+    "countrycode": "ES",
+    "codec": "MP3",
+    "bitrate": 0
+  },
+  {
+    "stationuuid": "61b0e2e9-4b34-44d5-83b9-b7e7d57c22ad",
+    "name": "CoSTa's Ambient Radio",
+    "url_resolved": "https://pc.costa-server.info.pl:11020/listen/costas_ambient_radio/radio.mp3",
+    "tags": "ambient,electronic,psybient",
+    "homepage": "https://pc.costa-server.info.pl:11020/public/costas_ambient_radio",
+    "favicon": "https://pc.costa-server.info.pl:11020/static/uploads/costas_ambient_radio/album_art.1745752871.jpg",
+    "country": "Poland",
+    "countrycode": "PL",
+    "codec": "MP3",
+    "bitrate": 192
+  },
+  {
     "stationuuid": "737c84ae-4529-40cc-970c-bcd1ec561068",
     "name": "ISEKOI Radio | Non-Stop Ambient",
     "url_resolved": "https://public.isekoi-radio.com/listen/ambient/ambientradio.flac",
@@ -55,7 +103,7 @@
     "homepage": "https://isekoi-radio.com/",
     "favicon": "https://i.postimg.cc/3rFkNkY4/LOGO-3-2-bg3.png",
     "country": "France",
-    "countrycode": "fr",
+    "countrycode": "FR",
     "codec": "OGG",
     "bitrate": 0
   },
@@ -70,5 +118,17 @@
     "countrycode": "US",
     "codec": "MP3",
     "bitrate": 56
+  },
+  {
+    "stationuuid": "ab2208bf-6f70-443e-ad11-73f594b2629f",
+    "name": "Planet Ambi HD",
+    "url_resolved": "http://philae.shoutca.st:9019/stream",
+    "tags": "ambient,drone",
+    "homepage": "https://planetambi.com/",
+    "favicon": "",
+    "country": "Switzerland",
+    "countrycode": "CH",
+    "codec": "MP3",
+    "bitrate": 320
   }
 ]
