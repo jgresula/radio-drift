@@ -15,6 +15,13 @@
             padding: 20px;
         }
 
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+        }
+
         .container {
             width: 100%;
             max-width: 500px;
@@ -792,4 +799,95 @@
             background: rgba(255, 255, 255, 0.02);
             border-radius: 8px;
             margin-bottom: 1rem;
+        }
+
+        /* Landing page styles */
+        .landing-container {
+            text-align: center;
+            padding-top: 10vh;
+        }
+
+        .landing-container h1 {
+            margin-bottom: 3rem;
+        }
+
+        .landing-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .landing-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .landing-card:hover {
+            background: rgba(123, 140, 222, 0.1);
+            border-color: rgba(123, 140, 222, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            color: #7b8cde;
+            opacity: 0.8;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #7b8cde;
+        }
+
+        .card-description {
+            font-size: 0.8rem;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .landing-container {
+                padding-top: 0;
+            }
+
+            .landing-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Page header in sub-pages */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header .home-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #7b8cde;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .page-header .home-link:hover {
+            color: #9aa8e8;
+        }
+
+        .page-header h1 {
+            margin-bottom: 0;
         }

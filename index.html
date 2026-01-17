@@ -3,288 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ambient Radio Mixer</title>
+    <title>Radio Drift</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container landing-container">
         <h1>Radio Drift</h1>
-
-        <!-- Master Volume -->
-        <div class="master-volume">
-            <span class="master-label">Master</span>
-            <button id="master-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-            <div class="volume-container" style="flex: 1;">
-                <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="100">
-                <span class="volume-value" id="master-volume-value">100%</span>
-            </div>
-        </div>
-
-        <!-- Radio Roulette Channel -->
-        <div class="channel" id="radio-channel">
-            <div class="channel-header" data-channel="radio">
-                <div class="channel-header-left">
-                    <span class="channel-toggle">&#9660;</span>
-                    <span class="channel-title">Radio Roulette</span>
+        <div class="landing-options">
+            <a href="roulette/" class="landing-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polyline points="16 3 21 3 21 8"/>
+                        <line x1="4" y1="20" x2="21" y2="3"/>
+                        <polyline points="21 16 21 21 16 21"/>
+                        <line x1="15" y1="15" x2="21" y2="21"/>
+                        <line x1="4" y1="4" x2="9" y2="9"/>
+                    </svg>
                 </div>
-                <span class="channel-status" id="radio-status">Stopped</span>
-            </div>
-            <div class="channel-content">
-                <div class="tag-row">
-                    <button class="tag-btn" id="tag-btn" title="Change genre">
-                        <span id="current-tag">ambient</span>
-                        <span>&#9662;</span>
-                    </button>
+                <div class="card-title">Radio Roulette</div>
+                <div class="card-description">Discover internet radio stations by genre. Shuffle through thousands of streams worldwide.</div>
+            </a>
+            <a href="ambient/" class="landing-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                        <path d="M19.07 4.93a10 10 0 010 14.14"/>
+                        <path d="M15.54 8.46a5 5 0 010 7.07"/>
+                    </svg>
                 </div>
-                <div class="now-playing-row">
-                    <div class="now-playing" id="radio-now-playing">Click play to start</div>
-                    <div class="now-playing-actions">
-                        <button id="radio-favorite" title="Add to favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
-                        <button id="radio-info" title="Station info"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
-                    </div>
-                </div>
-                <div class="now-playing-meta" id="radio-meta"></div>
-                <div class="controls">
-                    <button id="radio-toggle" title="Play/Pause">&#9654;</button>
-                    <button id="radio-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-                    <div class="volume-container">
-                        <input type="range" class="volume-slider" id="radio-volume" min="0" max="100" value="50">
-                        <span class="volume-value" id="radio-volume-value">50%</span>
-                    </div>
-                </div>
-                <div class="button-row">
-                    <button class="shuffle-btn" id="radio-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
-                    <button class="favorites-btn" id="open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ambient Radio Channel (Curated) -->
-        <div class="channel" id="curated-channel">
-            <div class="channel-header" data-channel="curated">
-                <div class="channel-header-left">
-                    <span class="channel-toggle">&#9660;</span>
-                    <span class="channel-title">Ambient Radio</span>
-                </div>
-                <span class="channel-status" id="curated-status">Stopped</span>
-            </div>
-            <div class="channel-content">
-                <div class="tag-row">
-                    <button class="tag-btn" id="curated-station-btn" title="Select station">
-                        <span id="current-curated-station">Select station</span>
-                        <span>&#9662;</span>
-                    </button>
-                </div>
-                <div class="now-playing-row">
-                    <div class="now-playing" id="curated-now-playing">Click play to start</div>
-                    <div class="now-playing-actions">
-                        <button id="curated-favorite" title="Add to favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
-                        <button id="curated-info" title="Station info"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
-                    </div>
-                </div>
-                <div class="now-playing-meta" id="curated-meta"></div>
-                <div class="controls">
-                    <button id="curated-toggle" title="Play/Pause">&#9654;</button>
-                    <button id="curated-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-                    <div class="volume-container">
-                        <input type="range" class="volume-slider" id="curated-volume" min="0" max="100" value="50">
-                        <span class="volume-value" id="curated-volume-value">50%</span>
-                    </div>
-                </div>
-                <div class="button-row">
-                    <button class="shuffle-btn" id="curated-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Station</button>
-                    <button class="favorites-btn" id="curated-open-favorites" title="Manage favorites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Live ATC Channel -->
-        <div class="channel" id="atc-channel">
-            <div class="channel-header" data-channel="atc">
-                <div class="channel-header-left">
-                    <span class="channel-toggle">&#9660;</span>
-                    <span class="channel-title">Live ATC</span>
-                </div>
-                <span class="channel-status" id="atc-status">Ready</span>
-            </div>
-            <div class="channel-content">
-                <div class="tag-row">
-                    <button class="tag-btn" id="atc-source-btn" title="Change ATC source">
-                        <span id="current-atc-source">Select source</span>
-                        <span>&#9662;</span>
-                    </button>
-                </div>
-                <div class="theater-overlay" id="theater-overlay"></div>
-                <div class="youtube-container" id="youtube-container">
-                    <button class="theater-close" id="theater-close" title="Close">&times;</button>
-                    <div id="atc-player"></div>
-                </div>
-                <div class="atc-disabled-message" id="atc-disabled-message" style="display: none;">
-                    Select an ATC source to start listening
-                </div>
-                <div class="controls" id="atc-controls">
-                    <button id="atc-toggle" title="Play/Pause">&#9654;</button>
-                    <button id="atc-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-                    <div class="volume-container">
-                        <input type="range" class="volume-slider" id="atc-volume" min="0" max="100" value="50">
-                        <span class="volume-value" id="atc-volume-value">50%</span>
-                    </div>
-                    <button id="atc-theater" class="btn-small" title="Theater mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="8" x2="22" y2="8"/></svg></button>
-                    <button id="atc-fullscreen" class="btn-small" title="Fullscreen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Space Comms Channel -->
-        <div class="channel" id="space-channel">
-            <div class="channel-header" data-channel="space">
-                <div class="channel-header-left">
-                    <span class="channel-toggle">&#9660;</span>
-                    <span class="channel-title">Space Comms</span>
-                </div>
-                <span class="channel-status" id="space-status">Stopped</span>
-            </div>
-            <div class="channel-content">
-                <div class="tag-row">
-                    <button class="tag-btn" id="source-btn" title="Change source">
-                        <span id="current-source">Apollo 11</span>
-                        <span>&#9662;</span>
-                    </button>
-                </div>
-                <div class="now-playing" id="space-now-playing">Loading clips...</div>
-                <div class="progress-container" id="space-progress" style="display: none;">
-                    <span class="progress-time" id="space-current">0:00:00</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="space-progress-fill"></div>
-                    </div>
-                    <span class="progress-time" id="space-duration">0:00:00</span>
-                </div>
-                <div class="controls">
-                    <button id="space-toggle" title="Play/Pause">&#9654;</button>
-                    <button id="space-mute" class="btn-small" title="Mute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
-                    <div class="volume-container">
-                        <input type="range" class="volume-slider" id="space-volume" min="0" max="100" value="50">
-                        <span class="volume-value" id="space-volume-value">50%</span>
-                    </div>
-                </div>
-                <div class="button-row">
-                    <button class="shuffle-btn" id="space-shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Random Clip</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            Radio via <a href="https://www.radio-browser.info/" target="_blank">Radio Browser</a> |
-            Space audio: <a href="https://archive.org/" target="_blank">Archive.org</a> (NASA/Public Domain)
+                <div class="card-title">Ambient Soundscape</div>
+                <div class="card-description">Mix curated ambient radio with live air traffic control for focus and relaxation.</div>
+            </a>
         </div>
     </div>
-
-    <!-- Tag Selection Modal -->
-    <div class="modal-overlay" id="tag-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Select Genre</span>
-                <button class="modal-close" id="tag-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="search-input" id="tag-search" placeholder="Search tags...">
-                <div class="tag-list" id="tag-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Favorites Modal -->
-    <div class="modal-overlay" id="favorites-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Favorite Stations</span>
-                <button class="modal-close" id="favorites-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="favorites-list" id="favorites-list"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="import-favorites">Import</button>
-                <button id="export-favorites">Export</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Source Selection Modal -->
-    <div class="modal-overlay" id="source-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Select Audio Source</span>
-                <button class="modal-close" id="source-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="tag-list" id="source-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Station Info Modal -->
-    <div class="modal-overlay" id="station-info-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Station Info</span>
-                <button class="modal-close" id="station-info-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="station-info-content"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ATC Source Selection Modal -->
-    <div class="modal-overlay" id="atc-source-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Select ATC Source</span>
-                <button class="modal-close" id="atc-source-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="tag-list" id="atc-source-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Curated Station Selection Modal -->
-    <div class="modal-overlay" id="curated-station-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Select Station</span>
-                <button class="modal-close" id="curated-station-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="search-input" id="curated-station-search" placeholder="Search stations...">
-                <div id="curated-favorites-section" style="display: none;">
-                    <div class="section-label">Favorites</div>
-                    <div class="tag-list" id="curated-favorites-list"></div>
-                </div>
-                <div class="section-label" id="curated-all-label">All Stations</div>
-                <div class="tag-list" id="curated-station-list"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Curated Favorites Modal -->
-    <div class="modal-overlay" id="curated-favorites-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">Favorite Stations</span>
-                <button class="modal-close" id="curated-favorites-modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="favorites-list" id="curated-favorites-manage-list"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="curated-import-favorites">Import</button>
-                <button id="curated-export-favorites">Export</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="app.js"></script>
 </body>
 </html>
