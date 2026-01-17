@@ -12,7 +12,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ATC_SOURCES="$SCRIPT_DIR/atc-sources.json"
+ATC_SOURCES="$SCRIPT_DIR/../atc-sources.json"
 
 # Colors for output
 RED='\033[0;31m'
