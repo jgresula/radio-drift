@@ -576,6 +576,91 @@
             font-weight: normal;
         }
 
+        /* Modal hint link at top */
+        .modal-hint {
+            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .modal-hint a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .modal-hint a:hover {
+            color: #7b8cde;
+        }
+
+        /* Custom ATC form */
+        .custom-atc-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 0.4rem;
+        }
+
+        .input-hint {
+            margin-top: 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        .input-hint a {
+            color: #7b8cde;
+            text-decoration: none;
+        }
+
+        .input-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: rgba(123, 140, 222, 0.2);
+            border: 1px solid rgba(123, 140, 222, 0.3);
+            border-radius: 8px;
+            color: #7b8cde;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: rgba(123, 140, 222, 0.3);
+            border-color: rgba(123, 140, 222, 0.5);
+        }
+
+        /* Custom source delete button */
+        .custom-delete-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0;
+            min-width: 5.5em;
+            text-align: right;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .custom-delete-btn:hover {
+            color: #f44336;
+        }
+
         /* Favorites list */
         .favorites-list {
             display: flex;

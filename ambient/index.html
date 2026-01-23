@@ -149,7 +149,37 @@
                 <button class="modal-close" id="atc-source-modal-close">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="modal-hint">
+                    <a href="#" id="custom-atc-btn">+ Add custom YouTube stream</a>
+                </div>
                 <div class="tag-list" id="atc-source-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom ATC Source Modal -->
+    <div class="modal-overlay" id="custom-atc-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Add Custom YouTube Stream</span>
+                <button class="modal-close" id="custom-atc-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-atc-form">
+                    <div class="form-group">
+                        <label for="custom-atc-id-input">YouTube Video ID or URL</label>
+                        <input type="text" class="search-input" id="custom-atc-id-input" placeholder="e.g., dQw4w9WgXcQ or https://youtube.com/watch?v=...">
+                        <div class="input-hint">
+                            <a href="https://www.youtube.com/results?search_query=live+atc" target="_blank">Search YouTube for live ATC streams</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-atc-name-input">Name (optional)</label>
+                        <input type="text" class="search-input" id="custom-atc-name-input" placeholder="e.g., My Custom ATC Stream">
+                    </div>
+                    <button class="btn-primary" id="custom-atc-submit">Add Stream</button>
+                </div>
+                <div id="custom-atc-history"></div>
             </div>
         </div>
     </div>

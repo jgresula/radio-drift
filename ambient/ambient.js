@@ -7,6 +7,7 @@ const CURATED_FAVORITES_KEY = 'ambientCuratedFavorites';
 const CURATED_SELECTED_KEY = 'ambientCuratedSelected';
 const SELECTED_ATC_SOURCE_KEY = 'ambientAtcSource';
 const ATC_SORT_KEY = 'ambientAtcSort';
+const CUSTOM_ATC_SOURCES_KEY = 'ambientCustomAtcSources';
 const VOLUME_SETTINGS_KEY = 'ambientVolumeSettings';
 const CHANNEL_COLLAPSED_KEY = 'ambientChannelCollapsed';
 
@@ -82,6 +83,14 @@ const atcControls = document.getElementById('atc-controls');
 const atcFullscreenBtn = document.getElementById('atc-fullscreen');
 const atcTheaterBtn = document.getElementById('atc-theater');
 const theaterOverlay = document.getElementById('theater-overlay');
+
+const customAtcBtn = document.getElementById('custom-atc-btn');
+const customAtcModal = document.getElementById('custom-atc-modal');
+const customAtcModalClose = document.getElementById('custom-atc-modal-close');
+const customAtcIdInput = document.getElementById('custom-atc-id-input');
+const customAtcNameInput = document.getElementById('custom-atc-name-input');
+const customAtcSubmit = document.getElementById('custom-atc-submit');
+const customAtcHistory = document.getElementById('custom-atc-history');
 
 const stationInfoModal = document.getElementById('station-info-modal');
 const stationInfoClose = document.getElementById('station-info-close');
@@ -639,12 +648,29 @@ async function loadAtcSources() {
         if (!response.ok) throw new Error('Failed to load ATC sources');
         allAtcSources = await response.json();
 
-        if (currentAtcSource && allAtcSources.some(s => s.id === currentAtcSource)) {
-            currentAtcSourceObj = allAtcSources.find(s => s.id === currentAtcSource);
-            startAtcButtonTimeInterval();
+        if (currentAtcSource) {
+            // Check predefined sources first
+            let source = allAtcSources.find(s => s.id === currentAtcSource);
+            // Then check custom sources
+            if (!source) {
+                const customSources = getCustomAtcSources();
+                source = customSources.find(s => s.id === currentAtcSource);
+            }
+
+            if (source) {
+                currentAtcSourceObj = source;
+                if (source.timezone) {
+                    startAtcButtonTimeInterval();
+                } else {
+                    currentAtcSourceSpan.textContent = source.name;
+                }
+            } else {
+                currentAtcSource = null;
+                currentAtcSourceObj = null;
+                currentAtcSourceSpan.textContent = 'None';
+                showAtcDisabled();
+            }
         } else {
-            currentAtcSource = null;
-            currentAtcSourceObj = null;
             currentAtcSourceSpan.textContent = 'None';
             showAtcDisabled();
         }
@@ -777,13 +803,27 @@ function selectAtcSource(sourceId) {
         atcToggleBtn.innerHTML = '&#9654;';
         showAtcDisabled();
     } else {
-        const source = allAtcSources.find(s => s.id === sourceId);
-        if (!source) return;
+        // Check both predefined and custom sources
+        let source = allAtcSources.find(s => s.id === sourceId);
+        if (!source) {
+            const customSources = getCustomAtcSources();
+            source = customSources.find(s => s.id === sourceId);
+        }
+        if (!source) {
+            // Create minimal source object for unknown IDs
+            source = { id: sourceId, name: `Custom: ${sourceId}`, custom: true };
+        }
 
         currentAtcSource = sourceId;
         currentAtcSourceObj = source;
         localStorage.setItem(SELECTED_ATC_SOURCE_KEY, sourceId);
-        startAtcButtonTimeInterval();
+
+        if (source.timezone) {
+            startAtcButtonTimeInterval();
+        } else {
+            stopAtcButtonTimeInterval();
+            currentAtcSourceSpan.textContent = source.name;
+        }
 
         createAtcPlayer(sourceId);
     }
@@ -814,6 +854,7 @@ function toggleAtcSort() {
 function renderAtcSources() {
     const noneSelected = currentAtcSource === null;
     const sortedSources = getSortedAtcSources();
+    const customSources = getCustomAtcSources();
 
     // Update sort toggle button text
     atcSortToggle.textContent = atcSortByTime ? '⏱ Time' : 'A-Z';
@@ -825,6 +866,16 @@ function renderAtcSources() {
             <span class="tag-time"></span>
         </div>
     `;
+
+    // Render custom sources first with delete button
+    if (customSources.length > 0) {
+        html += customSources.map(source => `
+            <div class="tag-item ${source.id === currentAtcSource ? 'selected' : ''}" data-atc-source="${source.id}">
+                <span class="tag-name">${escapeHtml(source.name)}</span>
+                <span class="custom-delete-btn" data-custom-delete="${source.id}" title="Remove">&times;</span>
+            </div>
+        `).join('');
+    }
 
     html += sortedSources.map(source => {
         const time = source.timezone ? formatLocalTime(source.timezone) : '';
@@ -897,6 +948,131 @@ function loadYouTubeAPI() {
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// ============== Custom ATC Sources ==============
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function getCustomAtcSources() {
+    try {
+        return JSON.parse(localStorage.getItem(CUSTOM_ATC_SOURCES_KEY)) || [];
+    } catch { return []; }
+}
+
+function saveCustomAtcSources(sources) {
+    localStorage.setItem(CUSTOM_ATC_SOURCES_KEY, JSON.stringify(sources));
+}
+
+function extractYouTubeId(input) {
+    const trimmed = input.trim();
+
+    // Try bare ID (11 characters, alphanumeric with - and _)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+        return trimmed;
+    }
+
+    // Try various YouTube URL formats
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/
+    ];
+
+    for (const pattern of patterns) {
+        const match = trimmed.match(pattern);
+        if (match) return match[1];
+    }
+
+    return null;
+}
+
+function addCustomAtcSource(id, name) {
+    const sources = getCustomAtcSources();
+
+    // Remove if already exists (will re-add to top)
+    const filtered = sources.filter(s => s.id !== id);
+
+    // Add to beginning
+    filtered.unshift({
+        id,
+        name: name || `Custom: ${id}`,
+        custom: true
+    });
+
+    // Keep only last 20
+    if (filtered.length > 20) {
+        filtered.length = 20;
+    }
+
+    saveCustomAtcSources(filtered);
+}
+
+function removeCustomAtcSource(id) {
+    const sources = getCustomAtcSources();
+    const filtered = sources.filter(s => s.id !== id);
+    saveCustomAtcSources(filtered);
+
+    // If currently playing, clear it
+    if (currentAtcSource === id) {
+        selectAtcSource(null);
+    }
+}
+
+function openCustomAtcModal() {
+    customAtcIdInput.value = '';
+    customAtcNameInput.value = '';
+    renderCustomAtcHistory();
+    customAtcModal.classList.add('active');
+    customAtcIdInput.focus();
+}
+
+function closeCustomAtcModal() {
+    customAtcModal.classList.remove('active');
+}
+
+function renderCustomAtcHistory() {
+    const sources = getCustomAtcSources();
+
+    if (sources.length === 0) {
+        customAtcHistory.innerHTML = '';
+        return;
+    }
+
+    customAtcHistory.innerHTML = `
+        <div class="section-label">Recent Custom Streams</div>
+        <div class="tag-list">
+            ${sources.map(source => `
+                <div class="tag-item ${source.id === currentAtcSource ? 'selected' : ''}" data-custom-id="${source.id}">
+                    <span class="tag-name" data-custom-play="${source.id}">${escapeHtml(source.name)}</span>
+                    <span class="custom-delete-btn" data-custom-delete="${source.id}" title="Remove">&times;</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function submitCustomAtcSource() {
+    const input = customAtcIdInput.value;
+    let name = customAtcNameInput.value.trim();
+
+    const videoId = extractYouTubeId(input);
+
+    if (!videoId) {
+        alert('Invalid YouTube ID or URL. Please enter an 11-character video ID or a valid YouTube URL.');
+        return;
+    }
+
+    // Limit name length to prevent UI issues
+    if (name.length > 100) {
+        name = name.substring(0, 100);
+    }
+
+    addCustomAtcSource(videoId, name);
+    closeCustomAtcModal();
+    closeAtcSourceModal();
+    selectAtcSource(videoId);
 }
 
 // ============== Collapsible Channels ==============
@@ -980,6 +1156,17 @@ atcSourceModal.addEventListener('click', (e) => {
     if (e.target === atcSourceModal) closeAtcSourceModal();
 });
 atcSourceList.addEventListener('click', (e) => {
+    // Handle delete button for custom sources
+    const deleteBtn = e.target.closest('[data-custom-delete]');
+    if (deleteBtn) {
+        e.stopPropagation();
+        const id = deleteBtn.dataset.customDelete;
+        removeCustomAtcSource(id);
+        renderAtcSources();
+        return;
+    }
+
+    // Handle source selection
     const item = e.target.closest('.tag-item');
     if (item) {
         const sourceId = item.dataset.atcSource;
@@ -991,6 +1178,40 @@ atcSourceList.addEventListener('click', (e) => {
 atcFullscreenBtn.addEventListener('click', toggleAtcFullscreen);
 atcTheaterBtn.addEventListener('click', toggleAtcTheater);
 theaterOverlay.addEventListener('click', closeAtcTheater);
+
+// Custom ATC modal
+customAtcBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openCustomAtcModal();
+});
+customAtcModalClose.addEventListener('click', closeCustomAtcModal);
+customAtcModal.addEventListener('click', (e) => {
+    if (e.target === customAtcModal) closeCustomAtcModal();
+});
+customAtcSubmit.addEventListener('click', submitCustomAtcSource);
+customAtcIdInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        submitCustomAtcSource();
+    }
+});
+customAtcHistory.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('[data-custom-delete]');
+    if (deleteBtn) {
+        e.stopPropagation();
+        const id = deleteBtn.dataset.customDelete;
+        removeCustomAtcSource(id);
+        renderCustomAtcHistory();
+        return;
+    }
+
+    const playItem = e.target.closest('[data-custom-play]');
+    if (playItem) {
+        const id = playItem.dataset.customPlay;
+        closeCustomAtcModal();
+        selectAtcSource(id);
+    }
+});
 // Use event delegation for theater close button (survives player recreation)
 youtubeContainer.addEventListener('click', (e) => {
     if (e.target.classList.contains('theater-close') || e.target.id === 'theater-close') {
@@ -1012,6 +1233,7 @@ document.addEventListener('keydown', (e) => {
         closeAtcSourceModal();
         closeStationInfoModal();
         closeAtcTheater();
+        closeCustomAtcModal();
     }
 });
 
