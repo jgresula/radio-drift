@@ -5,19 +5,9 @@
         "timezone": "America/New_York"
     },
     {
-        "id": "IfP3WzymBuI",
-        "name": "DFW - Dallas/Fort Worth East Tower",
-        "timezone": "America/Chicago"
-    },
-    {
         "id": "ygC5wni2DMQ",
         "name": "HKG - Hong Kong Int'l Airport ATC",
         "timezone": "Asia/Hong_Kong"
-    },
-    {
-        "id": "RQmWYMSV-pk",
-        "name": "HNL - Honolulu ATC + Radar",
-        "timezone": "Pacific/Honolulu"
     },
     {
         "id": "xq_kuLD8T0A",
@@ -45,21 +35,6 @@
         "timezone": "America/Los_Angeles"
     },
     {
-        "id": "xWvWtk2aOfI",
-        "name": "LAX - Los Angeles Runway with ATC",
-        "timezone": "America/Los_Angeles"
-    },
-    {
-        "id": "rwYhIuGWZvc",
-        "name": "LGA - LaGuardia New York ATC",
-        "timezone": "America/New_York"
-    },
-    {
-        "id": "OXeFcz3lEz4",
-        "name": "MIA - Miami Runway 9/27 with Tower",
-        "timezone": "America/New_York"
-    },
-    {
         "id": "wnDSkDnLRZg",
         "name": "PER - Perth Jandakot YPJT",
         "timezone": "Australia/Perth"
@@ -70,17 +45,7 @@
         "timezone": "Europe/Prague"
     },
     {
-        "id": "cMdLxB3mOdo",
-        "name": "SEA - Seattle-Tacoma ATC & Radar",
-        "timezone": "America/Los_Angeles"
-    },
-    {
-        "id": "HXhVJ_0Vxpw",
-        "name": "SEA - Seattle-Tacoma Flightradar24",
-        "timezone": "America/Los_Angeles"
-    },
-    {
-        "id": "-VHAib_44cU",
+        "id": "A9u7vG2QZ7M",
         "name": "SFO - San Francisco International",
         "timezone": "America/Los_Angeles"
     },
