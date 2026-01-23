@@ -210,6 +210,7 @@ function playCuratedStation(station) {
         curatedStatus.textContent = 'Unavailable';
         curatedStatus.className = 'channel-status error';
         curatedNowPlaying.textContent = 'Station offline - try another';
+        curatedToggleBtn.innerHTML = '&#9654;';
     });
 
     newAudio.addEventListener('waiting', () => {
@@ -224,6 +225,7 @@ function playCuratedStation(station) {
                 curatedStatus.textContent = 'Unavailable';
                 curatedStatus.className = 'channel-status error';
                 curatedNowPlaying.textContent = 'Station offline - try another';
+                curatedToggleBtn.innerHTML = '&#9654;';
             }
         }, 10000);
     });
@@ -236,6 +238,7 @@ function playCuratedStation(station) {
         curatedStatus.textContent = 'Unavailable';
         curatedStatus.className = 'channel-status error';
         curatedNowPlaying.textContent = 'Station offline - try another';
+        curatedToggleBtn.innerHTML = '&#9654;';
     });
 }
 
@@ -316,6 +319,7 @@ function playCuratedRandom() {
         curatedStatus.textContent = 'No stations';
         curatedStatus.className = 'channel-status error';
         curatedNowPlaying.textContent = curatedStations.length > 0 ? 'All stations offline' : 'No stations loaded';
+        curatedToggleBtn.innerHTML = '&#9654;';
         return;
     }
     playCuratedNext();
@@ -338,6 +342,7 @@ function playCuratedNext() {
     curatedStatus.textContent = 'No stations';
     curatedStatus.className = 'channel-status error';
     curatedNowPlaying.textContent = 'All stations offline';
+    curatedToggleBtn.innerHTML = '&#9654;';
 }
 
 function stopCurated() {
@@ -670,6 +675,10 @@ function createAtcPlayer(videoId) {
         atcPlayerReady = false;
     }
 
+    atcToggleBtn.innerHTML = '&#9654;';
+    atcStatus.textContent = 'Loading...';
+    atcStatus.className = 'channel-status loading';
+
     youtubeContainer.innerHTML = '<button class="theater-close" id="theater-close" title="Close">&times;</button><div id="atc-player"></div>';
 
     atcPlayer = new YT.Player('atc-player', {
@@ -706,6 +715,7 @@ function onAtcPlayerReady(event) {
     atcPlayerReady = true;
     atcStatus.textContent = 'Ready';
     atcStatus.className = 'channel-status';
+    atcToggleBtn.innerHTML = '&#9654;';
     updateVolumes();
 }
 
@@ -737,6 +747,7 @@ function onAtcPlayerError(event) {
     console.error('ATC player error:', event.data);
     atcStatus.textContent = 'Error';
     atcStatus.className = 'channel-status error';
+    atcToggleBtn.innerHTML = '&#9654;';
 }
 
 function toggleAtc() {
@@ -763,6 +774,7 @@ function selectAtcSource(sourceId) {
             atcPlayer = null;
             atcPlayerReady = false;
         }
+        atcToggleBtn.innerHTML = '&#9654;';
         showAtcDisabled();
     } else {
         const source = allAtcSources.find(s => s.id === sourceId);
